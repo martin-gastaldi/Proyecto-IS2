@@ -16,6 +16,48 @@ Esta situación genera, entre otras cosas:
 
 El proyecto busca solucionar estas problemáticas y propone desarrollar un **sistema centralizado, el cual permita mejorar la administración académica y el acceso a la información de una manera sencilla, ágil y segura**.
 
+# Proyecto de Gestión Académica - Universidad
+
+##  Usuarios del Sistema
+- **Administrador / Personal de oficina**
+  - Gestiona estudiantes, docentes, materias y planes de estudio.
+  - Tiene permisos de edición y control total sobre la información.
+
+- **Estudiantes**
+  - Consultan su información personal, notas y avance en la carrera.
+  - Se inscriben en materias si cumplen correlatividades.
+
+- **Docentes**
+  - Cargan notas de los estudiantes.
+  - Consultan listados de alumnos en sus materias.
+  - Se les asigna cargo (jefe de cátedra, jefe de trabajos prácticos, ayudante).
+
+---
+
+##  Funcionalidades principales
+1. **Gestión de estudiantes**
+   - Alta, baja, modificación y consulta de datos personales.
+   - Inscripción a materias validando correlatividades.
+   - Visualización del estado en la carrera y avance en el plan.
+
+2. **Gestión de docentes**
+   - Alta, baja y modificación de datos.
+   - Asignación de materias y cargos.
+   - Acceso a listados de alumnos y carga de notas.
+
+3. **Gestión de materias**
+   - Alta, baja y modificación de materias.
+   - Definición de correlatividades.
+   - Asociación con planes de estudio.
+   - Acceso de docentes para cargar notas.
+
+4. **Gestión de planes de estudio**
+   - Creación, edición y consulta de planes por carrera.
+   - Definición de materias, carga horaria, año/cuatrimestre y correlatividades.
+
+5. **Gestión de correlatividades**
+   - Validación automática de inscripciones según materias aprobadas.
+   - Mostrar correlativas al consultar estudiantes.
 ---
 
 ## **CÓMO EJECUTAR EL SERVIDOR**
