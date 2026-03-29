@@ -134,6 +134,57 @@ El alcance del proyecto fue evolucionando progresivamente, organizándose en dis
 
   - Sistema académico completo, listo para pruebas finales y uso institucional.
 
+### **- Problemas encontrados**
+
+Durante el desarrollo del proyecto se identificaron los siguientes problemas:
+
+- **Falta de separación en capas**, concentrando toda la lógica en una única clase principal.
+- **Manejo manual de conexiones a la base de datos**, con posibles impactos en rendimiento.
+- **Inconsistencias en la seguridad** (uso de contraseñas en texto plano en algunos endpoints).
+- **Validaciones de datos limitadas**.
+- **Problemas de rendimiento** por consultas repetidas a la base de datos.
+- **Falta de revisiones formales** de código.
+
+### **- Forma de organización del equipo**
+
+La organización del flujo de trabajo del equipo es la siguiente:
+
+- **Asignación de tareas**
+
+  Se asignan las tareas vía telefónica y se registran como issues en GitHub con fecha de entrega y criterios de aceptación. Para ello, se utilizará la metodología ágil SCRUM.
+
+- **Trabajo en la rama main**
+
+  Todos los miembros trabajan directamente en la rama `main`, actualizando frecuentemente su copia local.
+
+- **Commits**
+
+  Se realizan commits frecuentes y descriptivos para cada cambio realizado, evitando commits grandes que incluyan múltiples cambios no relacionados.
+
+- **Sincronización**
+
+  Antes de cada sesión, se realiza un `git pull origin main` y después de cada sesión, se realiza un `git push origin main`.
+
+- **Documentación**
+
+  Un miembro asignado actualiza la documentación en GitHub (README.md u otros archivos), para evitar errores y tener una estructura prolija.
+
+- **Revisión de código**
+
+  El código es revisado de manera informal entre los miembros antes de ser integrado a la rama `main`.
+
+- **Pruebas**
+
+  Cada miembro realiza pruebas locales antes de hacer un commit y se realizan pruebas generales al final de cada fase del proyecto.
+
+- **Entrega y plazos**
+
+  El equipo se asegura de cumplir con las fechas estipuladas y realiza una prueba de integración final antes de la entrega.
+
+- **Distribución Backend-Frontend**
+
+  En principio, no se establecerá una división entre los integrantes del grupo respecto a quién trabajará en el Backend y quién lo hará en el Frontend, sino que las tareas se designarán por comodidad de cada uno.
+
 ---
 
 ## **CÓMO EJECUTAR EL SERVIDOR**
