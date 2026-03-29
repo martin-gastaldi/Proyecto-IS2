@@ -70,6 +70,24 @@ El sistema deberá:
 - Mantener **tiempos de respuesta aceptables** para operaciones críticas.
 - Implementar mecanismos de **respaldo y recuperación de datos** ante fallos.
 
+### **- Tamaño del equipo**
+El desarrollo del proyecto está a cargo de un equipo conformado por **5 integrantes**.
+Se trata de una cantidad adecuada para la complejidad del proyecto propuesto, ya que permite repartir las tareas de manera organizada y equitativa. Además facilita la comunicación entre los miembros y permite la adaptacion en caso de posibles cambios en el transcurso del proyecto.
+
+###**- Tecnologías elegidas y justificación**
+
+Para el desarrolo se utilizaron tecnologías que permiten trabajar de forma mas simpre, organizada y eficiente.
+
+Las herramientas utilizadas son:
+- **Java**: utilizado como lenguaje principal.
+- **Spark Java**: microframework que facilita la creacion del servidor web de manera sencilla.
+- **SQLite**: base de datos liviana que no requiere configuraciones complejas.
+- **ActiveJDBC**: permite trabajar con objetos Java en lugar de escribir SQL manualmente.
+- **Mustache**: plantillas utilizadas para generar las vistas del sistema.
+- **Apache Maven**: ayuda en la gestion del proyecto, la compilacíon y el empaquetado.
+
+Estas tecnologías fueron elegidas porque permiten desarrollar el sistema sin agregar complejidad innecesaria, facilitando el trabajo  para el equipo. Además estas tecnologías se integran facilmente entre sí simplificando el desarrollo y mantenimiento del sistema.
+
 ---
 
 ## **CÓMO EJECUTAR EL SERVIDOR**
