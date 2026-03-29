@@ -72,65 +72,67 @@ El sistema deberá:
 
 ### **- Tamaño del equipo**
 El desarrollo del proyecto está a cargo de un equipo conformado por **5 integrantes**.
-Se trata de una cantidad adecuada para la complejidad del proyecto propuesto, ya que permite repartir las tareas de manera organizada y equitativa. Además facilita la comunicación entre los miembros y permite la adaptacion en caso de posibles cambios en el transcurso del proyecto.
+Se trata de una cantidad adecuada para la complejidad del proyecto propuesto, ya que permite repartir las tareas de manera organizada y equitativa. Además, facilita la comunicación entre los miembros y permite la adaptación en caso de posibles cambios en el transcurso del proyecto.
 
-###**- Tecnologías elegidas y justificación**
+### **- Tecnologías elegidas y justificación**
 
-Para el desarrolo se utilizaron tecnologías que permiten trabajar de forma mas simpre, organizada y eficiente.
+Para el desarrollo se utilizan tecnologías que permiten trabajar de forma más simple, organizada y eficiente.
 
 Las herramientas utilizadas son:
 - **Java**: utilizado como lenguaje principal.
-- **Spark Java**: microframework que facilita la creacion del servidor web de manera sencilla.
+- **Spark Java**: microframework que facilita la creación del servidor web de manera sencilla.
 - **SQLite**: base de datos liviana que no requiere configuraciones complejas.
 - **ActiveJDBC**: permite trabajar con objetos Java en lugar de escribir SQL manualmente.
 - **Mustache**: plantillas utilizadas para generar las vistas del sistema.
-- **Apache Maven**: ayuda en la gestion del proyecto, la compilacíon y el empaquetado.
+- **Apache Maven**: ayuda en la gestión del proyecto, la compilación y el empaquetado.
 
-Estas tecnologías fueron elegidas porque permiten desarrollar el sistema sin agregar complejidad innecesaria, facilitando el trabajo  para el equipo. Además estas tecnologías se integran facilmente entre sí simplificando el desarrollo y mantenimiento del sistema.
+Estas tecnologías fueron elegidas porque permiten **desarrollar el sistema sin agregar complejidad innecesaria**, facilitando el trabajo para el equipo. Además, **se integran fácilmente entre sí simplificando el desarrollo** y mantenimiento del sistema.
 
----
-
-##  Plazo estimado total
+### **- Plazo estimado total**
 - **Duración aproximada:** 8–12 semanas (2 a 3 meses).
 - **Metodología sugerida:** Desarrollo incremental con entregables por fase.
 
----
+### **- Cambios de alcance ocurridos**
 
-# Cambios de alcance ocurridos
+El alcance del proyecto fue evolucionando progresivamente, organizándose en distintas fases de desarrollo que incorporan nuevas funcionalidades.
 
-## Fase 1: Fundamentos (2–3 semanas)
-**Objetivo:** Construir la base del sistema.
-- Diseñar la base de datos inicial (estudiantes, docentes, materias).
-- Implementar CRUD básico (crear, leer, actualizar, eliminar).
-- Crear interfaz inicial para administradores.
-- Configurar roles y permisos básicos.
+***Fase 1: Fundamentos (2–3 semanas)***  
 
-**Entregable:**  
-Sistema mínimo funcional con gestión de estudiantes y docentes.
+- **Objetivo:** Construir la base del sistema.
 
----
+  - Diseñar la base de datos inicial (estudiantes, docentes, materias).
+  - Implementar CRUD básico (crear, leer, actualizar, eliminar).
+  - Crear interfaz inicial para administradores.
+  - Configurar roles y permisos básicos.
 
-##  Fase 2: Expansión (3–4 semanas)
-**Objetivo:** Ampliar funcionalidades y validar inscripciones.
-- Implementar gestión de planes de estudio.
-- Incorporar validación automática de correlatividades.
-- Interfaces diferenciadas para estudiantes y docentes.
-- Funcionalidad de inscripción a materias con validaciones.
+- **Entregable:**
 
-**Entregable:**  
-Sistema con planes de estudio y validación de inscripciones.
+  - Sistema mínimo funcional con gestión de estudiantes y docentes.
 
----
+***Fase 2: Expansión (3–4 semanas)***  
 
-##  Fase 3: Funcionalidades avanzadas (4–6 semanas)
-**Objetivo:** Completar el sistema con herramientas de seguimiento y escalabilidad.
-- Implementar cálculo de riesgo de abandono de estudiantes.
-- Reportes académicos y seguimiento de avance.
-- Optimización de permisos y seguridad.
-- Pruebas de integración y despliegue.
+- **Objetivo:** Ampliar funcionalidades y validar inscripciones.
 
-**Entregable:**  
-Sistema académico completo, listo para pruebas finales y uso institucional.
+  - Implementar gestión de planes de estudio.
+  - Incorporar validación automática de correlatividades.
+  - Interfaces diferenciadas para estudiantes y docentes.
+  - Funcionalidad de inscripción a materias con validaciones.
+
+- **Entregable:**
+
+  - Sistema con planes de estudio y validación de inscripciones.
+
+***Fase 3: Funcionalidades avanzadas (4–6 semanas)***  
+
+- **Objetivo:** Completar el sistema con herramientas de seguimiento y escalabilidad.
+  - Implementar cálculo de riesgo de abandono de estudiantes.
+  - Reportes académicos y seguimiento de avance.
+  - Optimización de permisos y seguridad.
+  - Pruebas de integración y despliegue.
+
+- **Entregable:**
+
+  - Sistema académico completo, listo para pruebas finales y uso institucional.
 
 ---
 
