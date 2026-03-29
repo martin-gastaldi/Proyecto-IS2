@@ -1,5 +1,5 @@
-**Ingeniería de Software II (Cód. 3387)**  
-**Año 2026**
+**Ingeniería de Software II (Cód. 3387) - Año 2026**  
+**AGÜERO, Daniel Ignacio - GASTALDI, Martín - GUZMAN, Ayelen - PEREYRA, Jorge Pedro Ezequiel - VEGA, Matías Thomas**
 
 # **Proyecto Integrador - Administración Académica Universitaria - Especificación, Gestión y Planificación**
 
@@ -185,6 +185,71 @@ La organización del flujo de trabajo del equipo es la siguiente:
 
   En principio, no se establecerá una división entre los integrantes del grupo respecto a quién trabajará en el Backend y quién lo hará en el Frontend, sino que las tareas se designarán por comodidad de cada uno.
 
+## **2. ANÁLISIS DE RIESGOS**
+
+A continuación, se registran y clasifican los riesgos detectados para el proyecto.
+
+| TIPO DE RIESGO | DESCRIPCIÓN | PROBABILIDAD | IMPACTO | IDENTIFICADO POR |
+|:--------------:|:-----------:|:------------:|:-------:|:----------------:|
+| Técnico | Arquitectura monolítica improvisada sin separación en capas | Alta | Alto | Equipo / IA (ChatGPT - Copilot - Gemini) |
+| Técnico | Uso de SQLite (poco escalable) en sistema multiusuario concurrente | Alta | Alto | Equipo / IA (ChatGPT - Copilot - Gemini) |
+| Técnico | Vulnerabilidad de seguridad por contraseñas en texto plano | Alta | Alto | Equipo / IA (ChatGPT - Copilot - Gemini) |
+| Técnico | Validaciones de datos insuficientes | Alta | Alto | Equipo / IA (ChatGPT - Copilot) |
+| Técnico | Falta de pruebas automatizadas | Alta | Alto | IA (ChatGPT - Copilot) |
+| Técnico | Servicios necesarios intermitentes o faltantes | Alta | Alto | Equipo |
+| Técnico | Problemas de rendimiento por consultas repetidas | Media | Alto | Equipo / IA (ChatGPT - Copilot - Gemini) |
+| Técnico | Alta disponibilidad sin infraestructura definida | Media | Alto | IA (ChatGPT) |
+| Técnico | Escalabilidad no validada | Media | Alto | IA (ChatGPT) |
+| Técnico | Dificultad en el modelado de las correlatividades entre materias | Media | Alto | Equipo |
+| Técnico | Solicitud y manejo complejo de condicionalidades de materias | Media | Alto | Equipo |
+| Técnico | Complejidad algorítmica para el cálculo de riesgo de abandono de estudiantes | Media | Alto | Equipo |
+| Técnico | Falla en las herramientas de trabajo del equipo | Media | Alto | Equipo |
+| Técnico | Integración de tecnologías sin experiencia | Media | Medio | IA (ChatGPT) |
+| Organizacional | Trabajo directo sobre rama main | Alta | Alto | Equipo / IA (ChatGPT - Copilot - Gemini) |
+| Organizacional | Falta de revisiones formales de código | Alta | Alto | Equipo / IA (ChatGPT - Copilot) |
+| Organizacional | Brecha entre requisitos y tecnología | Media | Alta | IA (Gemini) |
+| Organizacional | Asignación informal de tareas | Media | Medio | Equipo / IA (ChatGPT - Copilot) |
+| Organizacional | Un solo responsable de documentación | Media | Medio | IA (ChatGPT - Copilot) |
+| Organizacional | Falta de roles claros | Media | Medio | IA (ChatGPT - Copilot - Gemini) |
+| Organizacional | Uso superficial de SCRUM | Media | Medio | IA (ChatGPT) |
+| Organizacional | Falta de seguimiento de avances | Media | Medio | Equipo |
+| Organizacional | Desorganización en el uso del repositorio (GitHub) | Media | Medio | Equipo |
+| Organizacional | Falta de compromiso por alguna de las partes | Baja | Alto | Equipo |
+| Organizacional | Mala comunicación en el grupo | Baja | Alto | Equipo |
+| Organizacional | Pérdida de algún integrante del equipo | Baja | Medio | Equipo |
+| Planificación | Plazo muy ajustado (8 - 12 semanas) | Alta | Alto | IA (ChatGPT - Copilot) |
+| Planificación | Subestimación de funcionalidades complejas | Alta | Alto | Equipo / IA (ChatGPT - Gemini) |
+| Planificación | Pruebas sólo al final de cada fase | Alta | Alto | Equipo / IA (ChatGPT - Copilot) |
+| Planificación | No considerar tiempo para refactorización | Alta | Medio | IA (ChatGPT - Gemini) |
+| Planificación | Requerimientos mal definidos o incompletos | Media | Alto | Equipo |
+| Planificación | Mala priorización de tareas en el backlog | Media | Alto | Equipo |
+| Planificación | Falta de planificación de despliegue e infraestructura | Media | Alto | IA (ChatGPT) |
+| Planificación | Equipo pequeño ante posibles imprevistos | Media | Alto | IA (Copilot) |
+| Planificación | Falta de hitos intermedios claros | Media | Medio | IA (Gemini) |
+| Planificación | Dependencia de muchas tareas a una funcionalidad clave | Media | Medio | Equipo |
+| Planificación | Subestimación del tiempo de corrección de errores | Media | Medio | Equipo |
+| Humano | Falta de experiencia en seguridad | Alta | Alto | Equipo / IA (ChatGPT) |
+| Humano | Fallo en el aseguramiento de calidad | Alta | Alto | IA (Gemini) |
+| Humano | Dependencia de comunicación informal | Alta | Medio | IA (ChatGPT - Copilot) |
+| Humano | Posible sobrecarga de un miembro | Media | Alto | Equipo / IA (Copilot) |
+| Humano | Motivación variable en un proyecto académico | Media | Alto | Equipo / IA (Copilot) |
+| Humano | Conocimiento desigual de tecnologías por parte de los integrantes | Media | Medio | IA (ChatGPT) |
+| Humano | Ausencia de especialización | Media | Medio | IA (ChatGPT - Copilot - Gemini) |
+| Humano | Fatiga por plazos ajustados | Media | Medio | Equipo / IA (ChatGPT) |
+| Humano | Posibles conflictos grupales o descoordinación | Media | Medio | IA (Copilot) |
+| Humano | Dificultad para adaptarse a cambios y avances del proyecto | Media | Medio | Equipo |
+| Humano | Exceso de confianza en la delegación de tareas a herramientas de IA | Media | Medio | Equipo |
+| Humano | Falta de iniciativa o baja constancia por parte de algún miembro | Media | Medio | Equipo |
+| Humano | Dificultad para pedir ayuda a tiempo | Media | Medio | Equipo |
+| Humano | Problemas personales o imprevistos de un integrante | Baja | Alto | Equipo |
+| Humano | Pérdida de conocimiento por mala documentación y comunicación | Baja | Medio | IA (Gemini) |
+
+La identificación de riesgos muestra diferencias entre los aportes del equipo y los de las herramientas de LLM. Por un lado, **la IA tiende a proponer riesgos más generales y basados en buenas prácticas de ingeniería de software**, especialmente en aspectos técnicos como arquitectura, seguridad, testing y escalabilidad. Por otro lado, **el equipo identifica riesgos más concretos y vinculados a su forma real de trabajo**, incluyendo problemas de organización, comunicación y factores humanos.
+
+En cuanto al nivel de detalle, **los riesgos del equipo resultan más contextualizados y realistas**, mientras que **los de la IA aportan una visión más teórica y estructurada**. Ambos enfoques se complementan, logrando una cobertura más completa y de mayor calidad de los distintos tipos de riesgo.
+
+En conclusión, la combinación de ambas perspectivas permite obtener un **análisis más sólido, equilibrado y representativo** de la realidad del proyecto.
+
 ---
 
 ## **CÓMO EJECUTAR EL SERVIDOR**
@@ -209,7 +274,7 @@ mvn clean package
 
 Seguido de:
 ```bash
-java -jar "target\proye-is-1.0-SNAPSHOT.jar"
+java -jar "target/proye-is-1.0-SNAPSHOT.jar"
 ```
 El servidor puede accederse desde:
 
