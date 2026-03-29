@@ -90,6 +90,50 @@ Estas tecnologías fueron elegidas porque permiten desarrollar el sistema sin ag
 
 ---
 
+##  Plazo estimado total
+- **Duración aproximada:** 8–12 semanas (2 a 3 meses).
+- **Metodología sugerida:** Desarrollo incremental con entregables por fase.
+
+---
+
+# Cambios de alcance ocurridos
+
+## Fase 1: Fundamentos (2–3 semanas)
+**Objetivo:** Construir la base del sistema.
+- Diseñar la base de datos inicial (estudiantes, docentes, materias).
+- Implementar CRUD básico (crear, leer, actualizar, eliminar).
+- Crear interfaz inicial para administradores.
+- Configurar roles y permisos básicos.
+
+**Entregable:**  
+Sistema mínimo funcional con gestión de estudiantes y docentes.
+
+---
+
+##  Fase 2: Expansión (3–4 semanas)
+**Objetivo:** Ampliar funcionalidades y validar inscripciones.
+- Implementar gestión de planes de estudio.
+- Incorporar validación automática de correlatividades.
+- Interfaces diferenciadas para estudiantes y docentes.
+- Funcionalidad de inscripción a materias con validaciones.
+
+**Entregable:**  
+Sistema con planes de estudio y validación de inscripciones.
+
+---
+
+##  Fase 3: Funcionalidades avanzadas (4–6 semanas)
+**Objetivo:** Completar el sistema con herramientas de seguimiento y escalabilidad.
+- Implementar cálculo de riesgo de abandono de estudiantes.
+- Reportes académicos y seguimiento de avance.
+- Optimización de permisos y seguridad.
+- Pruebas de integración y despliegue.
+
+**Entregable:**  
+Sistema académico completo, listo para pruebas finales y uso institucional.
+
+---
+
 ## **CÓMO EJECUTAR EL SERVIDOR**
 
 Clonar el repositorio:
