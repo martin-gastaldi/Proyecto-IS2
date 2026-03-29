@@ -1,12 +1,12 @@
 **Ingeniería de Software II (Cód. 3387)**  
 **Año 2026**
 
-# **Proyecto Integrador: Especificación, Gestión y Planificación**
+# **Proyecto Integrador - Administración Académica Universitaria - Especificación, Gestión y Planificación**
 
 ## **1. DESCRIPCIÓN DEL PROYECTO**
 
 ### **- Problema que se quiere resolver**
-En la actualidad, muchas universidades aún cuentan con **sistemas poco eficientes para realizar su gestión académica**. En algunos casos, poseen su información distribuida entre muchos sistemas fragmentados y poco seguros, o incluso siguen haciendo uso de procesos manuales lentos, problemáticos y poco escalables.  
+En la actualidad, muchas universidades aún cuentan con **sistemas poco eficientes para realizar su gestión académica**. En algunos casos, la información se encuentra distribuida en múltiples sistemas fragmentados y poco seguros, o incluso siguen haciendo uso de procesos manuales lentos, problemáticos y poco escalables.  
 
 Esta situación genera, entre otras cosas:
 
@@ -16,9 +16,7 @@ Esta situación genera, entre otras cosas:
 
 El proyecto busca solucionar estas problemáticas y propone desarrollar un **sistema centralizado, el cual permita mejorar la administración académica y el acceso a la información de una manera sencilla, ágil y segura**.
 
-# Proyecto de Gestión Académica - Universidad
-
-##  Usuarios del Sistema
+### **- Usuarios del sistema**
 - **Administrador / Personal de oficina**
   - Gestiona estudiantes, docentes, materias y planes de estudio.
   - Tiene permisos de edición y control total sobre la información.
@@ -32,9 +30,7 @@ El proyecto busca solucionar estas problemáticas y propone desarrollar un **sis
   - Consultan listados de alumnos en sus materias.
   - Se les asigna cargo (jefe de cátedra, jefe de trabajos prácticos, ayudante).
 
----
-
-##  Funcionalidades principales
+### **- Funcionalidades principales**
 1. **Gestión de estudiantes**
    - Alta, baja, modificación y consulta de datos personales.
    - Inscripción a materias validando correlatividades.
@@ -58,14 +54,36 @@ El proyecto busca solucionar estas problemáticas y propone desarrollar un **sis
 5. **Gestión de correlatividades**
    - Validación automática de inscripciones según materias aprobadas.
    - Mostrar correlativas al consultar estudiantes.
+
+### **- Restricciones técnicas**
+
+El sistema deberá:
+
+- Ser accesible mediante cualquier **navegador web**.
+- Implementar mecanismos de **autenticación** y **control de acceso** según el rol del usuario (administrador, estudiante, docente).
+- Garantizar la **seguridad** y **confidencialidad** de los datos académicos.
+- Utilizar una **base de datos relacional** para el almacenamiento de la información.
+- Ser **compatible** con la infraestructura tecnológica disponible.
+- Brindar una **alta disponibilidad** del sistema (24/7), sujeta a tareas de mantenimiento programadas.
+- Garantizar la **integridad de los datos**, evitando inconsistencias en operaciones concurrentes.
+- Permitir la **escalabilidad**, de modo que pueda soportar un aumento en la cantidad de usuarios sin degradar significativamente su rendimiento.
+- Mantener **tiempos de respuesta aceptables** para operaciones críticas.
+- Implementar mecanismos de **respaldo y recuperación de datos** ante fallos.
+
 ---
 
 ## **CÓMO EJECUTAR EL SERVIDOR**
 
+Clonar el repositorio:
+
+```bash
+git clone https://github.com/martin-gastaldi/Proyecto-IS2.git
+```
+
 Ubicarse en la carpeta:
 
 ```bash
-cd Proyecto-IS2\
+cd Proyecto-IS2
 ```
 
 Luego, ejecutar el comando:
