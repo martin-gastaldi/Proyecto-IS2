@@ -254,7 +254,7 @@ En conclusión, la combinación de ambas perspectivas permite obtener un **anál
 
 El siguiente **Diagrama de Clases** representa el **modelo de dominio del sistema** de administración académica. En él se describen las principales **entidades** del sistema, sus **atributos**, **métodos** y **relaciones**, permitiendo visualizar la **estructura general** del software y su **organización interna**.
 
-```Mermaid
+```mermaid
 classDiagram
 direction LR
 
