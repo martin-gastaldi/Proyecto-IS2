@@ -249,3 +249,175 @@ La identificación de riesgos muestra diferencias entre los aportes del equipo y
 En cuanto al nivel de detalle, **los riesgos del equipo resultan más contextualizados y realistas**, mientras que **los de la IA aportan una visión más teórica y estructurada**. Ambos enfoques se complementan, logrando una cobertura más completa y de mayor calidad de los distintos tipos de riesgo.
 
 En conclusión, la combinación de ambas perspectivas permite obtener un **análisis más sólido, equilibrado y representativo** de la realidad del proyecto.
+
+## **3. DISEÑO DEL SISTEMA**
+
+El siguiente **Diagrama de Clases** representa el **modelo de dominio del sistema** de administración académica. En él se describen las principales **entidades** del sistema, sus **atributos**, **métodos** y **relaciones**, permitiendo visualizar la **estructura general** del software y su **organización interna**.
+
+```Mermaid
+classDiagram
+direction LR
+
+class Persona {
+  - id : int
+  - nombre : String
+  - apellido : String
+  - dni : String
+  - telefono : String
+  - correo : String
+  - passwordHash : String
+
+  + obtenerNombreCompleto () String
+}
+
+class Estudiante {
+  - legajo : int
+  - fechaIngreso : Date
+
+  + inscribirse (materia : Materia) boolean
+  + puedeCursar (materia : Materia) boolean
+}
+
+class Docente {
+  - cuil : String
+  - fechaIngreso : Date
+  - salario : double
+
+  + cargarNota (estudiante : Estudiante, materia : Materia, nota : int) void
+  + obtenerAlumnos (materia : Materia) List ~Estudiante~
+}
+
+class Administrador {
+  + crearEstudiante (estudiante : Estudiante) void
+  + modificarEstudiante (estudiante : Estudiante) void
+  + eliminarEstudiante (estudiante : Estudiante) void
+
+  + crearDocente (docente : Docente) void
+  + asignarDocenteAMateria (docente : Docente, materia : Materia) void
+
+  + crearMateria (materia : Materia) void
+  + definirCorrelativa (materia : Materia, correlativa : Materia) void
+
+  + crearPlan (plan : PlanEstudio) void
+  + modificarPlan (plan : PlanEstudio) void
+  + agregarMateriaAPlan (plan : PlanEstudio, materia : Materia) void
+}
+
+Persona <|-- Estudiante : Es una
+Persona <|-- Docente : Es una
+Persona <|-- Administrador : Es una
+
+class Carrera {
+  - id : int
+  - nombre : String
+  - facultad : String
+  - duracionAnios : int
+  - tituloOtorgado : String
+
+  + agregarPlan (plan : PlanEstudio) void
+  + obtenerPlanVigente () PlanEstudio
+}
+
+class PlanDeEstudio {
+  - id : int
+  - anio : int
+  - vigente : boolean
+  - descripcion : String
+
+  + agregarMateria (materia : Materia) void
+  + obtenerMaterias () List ~Materia~
+  + cantidadMaterias () int
+}
+
+class Inscripcion {
+  - fechaIngreso : Date
+  - situacion : EstadoCarrera
+
+  + calcularPromedio () double
+  + calcularAvance () float
+  + calcularRiesgoAbandono () double
+}
+
+class EstadoCarrera {
+  <<enumeration>>
+  INGRESANTE
+  ACTIVA
+  FINALIZADA
+  ABANDONADA
+}
+
+Carrera "1" *-- "1..*" PlanDeEstudio : Contiene
+Estudiante "1" -- "0..*" Inscripcion : Realiza
+Carrera "1" -- "0..*" Inscripcion : Registra
+PlanDeEstudio "1" -- "0..*" Inscripcion : Rige
+
+class Materia {
+  - codigo : int
+  - nombre : String
+  - anio : int
+  - cuatrimestre : int
+  - cargaHoraria : int
+
+  + esCorrelativaDe (materia : Materia) boolean
+}
+
+class Correlatividad {
+  - condicion : EstadoMateria
+
+  + cumpleCorrelatividad (estudiante : Estudiante) boolean
+}
+
+class EstadoMateria {
+  <<enumeration>>
+  LIBRE
+  REGULAR
+  PROMOCIONADA
+  APROBADA
+}
+
+PlanDeEstudio "1" *-- "1..*" Materia : Define
+Materia "1" -- "0..*" Correlatividad : Requiere
+Correlatividad "1" -- "1" Materia : Depende de
+
+class Dictado {
+  - cargo : CargoDocente
+  - dedicacion : DedicacionDocente
+  - fechaInicio : Date
+  - fechaFin : Date
+
+  + estaActivo (fecha : Date) boolean
+  + finalizar (fechaFin : Date) void
+}
+
+class DedicacionDocente {
+  <<enumeration>>
+  SIMPLE
+  SEMI_EXCLUSIVA
+  EXCLUSIVA
+}
+
+class CargoDocente {
+  <<enumeration>>
+  TITULAR
+  JEFE_PRACTICA
+  AYUDANTE
+}
+
+Docente "1" -- "0..*" Dictado : Dicta
+Materia "1" -- "0..*" Dictado : Es dictada en
+
+class Cursado {
+  - fechaInscripcion : Date
+  - estado : EstadoMateria
+  - notaFinal : float
+
+  + estaAprobada () boolean
+  + estaRegular () boolean
+  + registrarNota (nota : int) void
+  + aprobar () void
+  + promocionar () void
+}
+
+Estudiante "1" -- "0..*" Cursado : Cursa
+Materia "1" -- "0..*" Cursado : Es cursada en
+```
