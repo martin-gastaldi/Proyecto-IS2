@@ -252,6 +252,29 @@ En conclusión, la combinación de ambas perspectivas permite obtener un **anál
 
 ## **3. DISEÑO DEL SISTEMA**
 
+### **3.1 Arquitectura general**
+
+El siguiente diagrama representa una vista general de la **arquitectura del sistema**, mostrando los principales **componentes** y el **flujo de interacción** entre el cliente web, el servidor backend y la base de datos. Esta representación permite comprender cómo se procesan las **solicitudes HTTP**, cómo se **gestionan los datos** y cómo se generan las **respuestas hacia el usuario**.
+
+```mermaid
+graph TD
+
+A["Cliente Web (Browser)"] -->|HTTP Request| B["Web App (Spark Java)"]
+
+B -->|Renderiza vistas| V["Templates Mustache"]
+B -->|Lógica de negocio| M["Modelos ActiveJDBC"]
+
+M -->|Consulta| C[(Base de Datos SQLite)]
+C -->|Resultados| M
+
+M --> B
+V --> B
+
+B -->|HTTP Response HTML/JSON| A
+```
+
+### **3.2 Modelo de dominio**
+
 El siguiente **Diagrama de Clases** representa el **modelo de dominio del sistema** de administración académica. En él se describen las principales **entidades** del sistema, sus **atributos**, **métodos** y **relaciones**, permitiendo visualizar la **estructura general** del software y su **organización interna**.
 
 ```mermaid
@@ -298,9 +321,9 @@ class Administrador {
   + crearMateria (materia : Materia) void
   + definirCorrelativa (materia : Materia, correlativa : Materia) void
 
-  + crearPlan (plan : PlanEstudio) void
-  + modificarPlan (plan : PlanEstudio) void
-  + agregarMateriaAPlan (plan : PlanEstudio, materia : Materia) void
+  + crearPlan (plan : PlanDeEstudio) void
+  + modificarPlan (plan : PlanDeEstudio) void
+  + agregarMateriaAPlan (plan : PlanDeEstudio, materia : Materia) void
 }
 
 Persona <|-- Estudiante : Es una
@@ -314,8 +337,8 @@ class Carrera {
   - duracionAnios : int
   - tituloOtorgado : String
 
-  + agregarPlan (plan : PlanEstudio) void
-  + obtenerPlanVigente () PlanEstudio
+  + agregarPlan (plan : PlanDeEstudio) void
+  + obtenerPlanVigente () PlanDeEstudio
 }
 
 class PlanDeEstudio {
