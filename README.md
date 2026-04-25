@@ -32,7 +32,13 @@ cd Proyecto-IS2
 Compilar el proyecto:
 
 ```bash
-mvn clean package
+mvn clean package -Ptest
+```
+
+Correr los tests:
+
+```bash
+mvn test -Ptest
 ```
 
 Ejecutar el servidor:
