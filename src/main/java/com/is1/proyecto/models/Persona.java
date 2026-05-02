@@ -28,5 +28,21 @@ public class Persona extends Model {
     public void setSurname(String surname){
         set ("surname", surname); //le asigna apellido a la columna apellido
     }
+ 
+    public String getCorreo(){
+        return getString("correo"); //retorna el valor de la columna correo
+    }
+
+    public void setCorreo(String correo){
+        set("correo", correo); //le asigna correo a la columna correo
+    }
+
+    public String getTelefono(){
+        return getString("telefono");
+    }
+
+    public void setTelefono(String telefono){
+        set("telefono", telefono);
+    }
 
 }

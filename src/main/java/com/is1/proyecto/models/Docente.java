@@ -21,11 +21,13 @@ public class Docente extends Model {
         set("departament", departament); //le asigna departamento a la columna departamento
     }
 
-    public String getCorreo(){
-        return getString("correo"); //retorna el valor de la columna correo
+    public String getCuil(){
+        return getString("cuil");
     }
 
-    public void setCorreo(String correo){
-        set("correo", correo); //le asigna correo a la columna correo
+    public void setCuil(String cuil){
+        set("cuil", cuil);
     }
+
+
 }
