@@ -18,7 +18,11 @@ DROP TABLE IF EXISTS carrera;
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT, -- Clave primaria autoincremental para SQLite
     name TEXT NOT NULL UNIQUE,          -- Nombre de usuario (TEXT es el tipo de cadena recomendado para SQLite), con restricción UNIQUE
-    password TEXT NOT NULL           -- Contraseña hasheada (TEXT es el tipo de cadena recomendado para SQLite)
+    password TEXT NOT NULL,           -- Contraseña hasheada (TEXT es el tipo de cadena recomendado para SQLite)
+    dni INTEGER UNIQUE,  -- relacion 1..1 con persona
+    FOREIGN KEY (dni) REFERENCES persona(dni)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 CREATE TABLE persona (
     dni INTEGER PRIMARY KEY,
@@ -54,7 +58,11 @@ CREATE TABLE materia (
     nombreMateria TEXT NOT NULL,
     anio INTEGER,
     cuatrimestre INTEGER,
-    carga_horaria INTEGER
+    carga_horaria INTEGER,
+    id_carrera INTEGER, 
+     FOREIGN KEY (id_carrera) REFERENCES carrera(id_carrera)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 CREATE TABLE carrera (
     id_carrera INTEGER PRIMARY KEY AUTOINCREMENT,

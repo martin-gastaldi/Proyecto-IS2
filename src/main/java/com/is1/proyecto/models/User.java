@@ -13,9 +13,18 @@ public class User extends Model {
 
     // Opcional: Puedes agregar métodos getters y setters si prefieres un acceso más tipado,
     // aunque los métodos genéricos de Model (getString(), set(), getInteger(), etc.) ya funcionan.
+   
 
     public String getName() {
         return getString("name"); // Obtiene el valor de la columna 'name'
+    }
+
+    public void setDni(Integer dni) {
+        set("dni", dni); // Establece el valor para la columna 'name'
+    }
+
+    public Integer getDni() {
+        return getInteger("dni"); // Obtiene el valor de la columna 'password'
     }
 
     public void setName(String name) {

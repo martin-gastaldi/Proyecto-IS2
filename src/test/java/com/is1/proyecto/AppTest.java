@@ -1,6 +1,9 @@
 package com.is1.proyecto;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.is1.proyecto.config.DBConfigSingleton;
@@ -15,6 +18,7 @@ import com.is1.proyecto.models.User;
  * Su objetivo es validar el correcto funcionamiento de los modelos ActiveJDBC.
  */
 public class AppTest {
+
     /**
      * TEST: getters y setters del modelo User.
      */
@@ -22,61 +26,72 @@ public class AppTest {
     void testUser_gettersAndSetters () {
         User user = new User ();
 
-        user.setName ("testUser");
-        user.setPassword ("1234");
+        user.setName("testUser");
+        user.setPassword("1234");
+        user.setDni(123); // 👈 nuevo campo
 
-        assertEquals ("testUser", user.getName ());
-        assertEquals ("1234", user.getPassword ());
+        assertEquals("testUser", user.getName());
+        assertEquals("1234", user.getPassword());
+        assertEquals(123, user.getDni()); // 👈 validación nueva
     }
 
     /**
      * TEST: getters y setters del modelo Persona.
      */
     @Test
-    void testPersona_gettersAndSetters () {
-        Persona persona = new Persona ();
-
-        persona.setDni (123);
-        persona.setRealName ("Juan");
-        persona.setSurname ("Perez");
-
-        assertEquals (123, persona.getDni ());
-        assertEquals ("Juan", persona.getRealName ());
-        assertEquals ("Perez", persona.getSurname ());
+    void testPersona_gettersAndSetters() {
+        Persona persona = new Persona();
+ 
+        persona.setDni(12345678);
+        persona.setRealName("Juan");
+        persona.setSurname("Perez");
+        persona.setTelefono("3512345678");
+        persona.setCorreo("juan@test.com");
+ 
+        assertEquals(12345678, persona.getDni());
+        assertEquals("Juan", persona.getRealName());
+        assertEquals("Perez", persona.getSurname());
+        assertEquals("3512345678", persona.getTelefono());
+        assertEquals("juan@test.com", persona.getCorreo());
     }
 
     /**
      * TEST: getters y setters del modelo Docente.
      */
-    @Test
-    void testDocente_gettersAndSetters () {
-        Docente docente = new Docente ();
-
-        docente.setDni (123);
-        docente.setDepartament ("CS");
-        docente.setCorreo ("test@test.com");
-
-        assertEquals (123, docente.getDni ());
-        assertEquals ("CS", docente.getDepartament ());
-        assertEquals ("test@test.com", docente.getCorreo ());
+     @Test
+    void testDocente_gettersAndSetters() {
+        Docente docente = new Docente();
+ 
+        docente.setDni(12345678);
+        docente.setDepartament("Ciencias de la Computacion");
+        docente.setCuil("20-12345678-1");
+ 
+        assertEquals(12345678, docente.getDni());
+        assertEquals("Ciencias de la Computacion", docente.getDepartament());
+        assertEquals("20-12345678-1", docente.getCuil());
     }
 
     /**
      * TEST: getters y setters del modelo Materia.
      */
-    @Test
-    void testMateria_gettersAndSetters () {
-        Materia materia = new Materia ();
-
-        materia.setEncargado (123);
-        materia.setNombreMateria ("IS1");
-        materia.setIdCarrera (1);
-
-        assertEquals (123, materia.getEncargado ());
-        assertEquals ("IS1", materia.getNombreMateria ());
-        assertEquals (1, materia.getIdCarrera ());
+     @Test
+    void testMateria_gettersAndSetters() {
+        Materia materia = new Materia();
+ 
+        materia.setNombreMateria("Ingenieria de Software I");
+        materia.setAnio(3);
+        materia.setCuatrimestre(1);
+        materia.setCargaHoraria(96);
+        materia.setIdCarrera(1);
+ 
+        assertEquals("Ingenieria de Software I", materia.getNombreMateria());
+        assertEquals(3, materia.getAnio());
+        assertEquals(1, materia.getCuatrimestre());
+        assertEquals(96, materia.getCargaHoraria());
+        assertEquals(1, materia.getIdCarrera());
     }
 
+    
     /**
      * TEST: el singleton devuelve siempre la misma instancia.
      */

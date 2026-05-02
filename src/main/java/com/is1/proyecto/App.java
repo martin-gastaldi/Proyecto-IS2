@@ -1,28 +1,29 @@
 package com.is1.proyecto; // Define el paquete de la aplicación, debe coincidir con la estructura de carpetas.
 
-// Importaciones necesarias para la aplicación Spark
-import com.fasterxml.jackson.databind.ObjectMapper; // Utilidad para serializar/deserializar objetos Java a/desde JSON.
-import static spark.Spark.*; // Importa los métodos estáticos principales de Spark (get, post, before, after, etc.).
+import java.util.ArrayList;
+import java.util.HashMap; // Utilidad para serializar/deserializar objetos Java a/desde JSON.
+import java.util.List;
+import java.util.Map; // Importa los métodos estáticos principales de Spark (get, post, before, after, etc.).
 
-// Importaciones específicas para ActiveJDBC (ORM para la base de datos)
 import org.javalite.activejdbc.Base; // Clase central de ActiveJDBC para gestionar la conexión a la base de datos.
-import org.javalite.activejdbc.Model;
-import org.mindrot.jbcrypt.BCrypt; // Utilidad para hashear y verificar contraseñas de forma segura.
+import org.mindrot.jbcrypt.BCrypt;
 
-// Importaciones de Spark para renderizado de plantillas
-import spark.ModelAndView; // Representa un modelo de datos y el nombre de la vista a renderizar.
-import spark.template.mustache.MustacheTemplateEngine; // Motor de plantillas Mustache para Spark.
-
-// Importaciones estándar de Java
-import java.util.HashMap; // Para crear mapas de datos (modelos para las plantillas).
-import java.util.Map; // Interfaz Map, utilizada para Map.of() o HashMap.
-
-// Importaciones de clases del proyecto
-import com.is1.proyecto.config.DBConfigSingleton; // Clase Singleton para la configuración de la base de datos.
-import com.is1.proyecto.models.User; // Modelo de ActiveJDBC que representa la tabla 'users'.
+import com.fasterxml.jackson.databind.ObjectMapper; // Utilidad para hashear y verificar contraseñas de forma segura.
+import com.is1.proyecto.config.DBConfigSingleton; // Representa un modelo de datos y el nombre de la vista a renderizar.
+import com.is1.proyecto.models.Dictado; // Motor de plantillas Mustache para Spark.
 import com.is1.proyecto.models.Docente;
-import com.is1.proyecto.models.Persona;
-import com.is1.proyecto.models.Materia;
+import com.is1.proyecto.models.Materia; // Para crear mapas de datos (modelos para las plantillas).
+import com.is1.proyecto.models.Persona; // Interfaz Map, utilizada para Map.of() o HashMap.
+import com.is1.proyecto.models.User; // Clase Singleton para la configuración de la base de datos.
+
+import spark.ModelAndView; // Modelo de ActiveJDBC que representa la tabla 'users'.
+import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import spark.template.mustache.MustacheTemplateEngine;
 
 
 /**
@@ -53,6 +54,7 @@ public class App {
                 if(!Base.hasConnection()){
                 Base.open(dbConfig.getDriver(), dbConfig.getDbUrl(), dbConfig.getUser(), dbConfig.getPass());
                 System.out.println(req.url());
+                System.out.println("USANDO DB: " + dbConfig.getDbUrl());
                 }
             }catch (Exception e) {
                 // Si ocurre un error al abrir la conexión, se registra y se detiene la solicitud
@@ -166,42 +168,82 @@ public class App {
         // --- Rutas POST para manejar envíos de formularios y APIs ---
 
         // POST: Maneja el envío del formulario de creación de nueva cuenta.
-        post("/user/new", (req, res) -> {
+       post("/user/new", (req, res) -> {
             String name = req.queryParams("name");
             String password = req.queryParams("password");
+            String realName = req.queryParams("realName");
+            String surname = req.queryParams("surname");
+            String dniStr = req.queryParams("dni");
+            String correo = req.queryParams("correo");
 
-            // Validaciones básicas: campos no pueden ser nulos o vacíos.
-            if (name == null || name.isEmpty() || password == null || password.isEmpty()) {
-                res.status(400); // Código de estado HTTP 400 (Bad Request).
-                // Redirige al formulario de creación con un mensaje de error.
-                res.redirect("/user/create?error=Nombre y contraseña son requeridos.");
-                return ""; // Retorna una cadena vacía ya que la respuesta ya fue redirigida.
+            // validación
+            if (name == null || name.isEmpty() ||
+                password == null || password.isEmpty() ||
+                realName == null || realName.isEmpty() ||
+                surname == null || surname.isEmpty() ||
+                dniStr == null || dniStr.isEmpty() ||
+                correo == null || correo.isEmpty()) {
+
+                res.redirect("/user/create?error=Todos los campos son obligatorios.");
+                return null;
+            }
+
+            Integer dni;
+            try {
+                dni = Integer.valueOf(dniStr);
+            } catch (NumberFormatException e) {
+                res.redirect("/user/create?error=DNI inválido.");
+                return null;
+            }
+
+            // validar username
+            if (User.findFirst("name = ?", name) != null) {
+                res.redirect("/user/create?error=El usuario ya existe.");
+                return null;
+            }
+
+            // validar DNI en user (1..1)
+            if (User.findFirst("dni = ?", dni) != null) {
+                res.redirect("/user/create?error=Esta persona ya tiene usuario.");
+                return null;
             }
 
             try {
-                // Intenta crear y guardar la nueva cuenta en la base de datos.
-                User ac = new User(); // Crea una nueva instancia del modelo User.
-                // Hashea la contraseña de forma segura antes de guardarla.
+                Base.openTransaction();
+
+                // buscar persona
+                Persona persona = Persona.findFirst("dni = ?", dni);
+
+                if (persona == null) {
+                    persona = new Persona();
+                    persona.set("dni", dni);
+                    persona.set("realName", realName);
+                    persona.set("surname", surname);
+                    persona.set("telefono", "0");
+                    persona.set("correo", correo);
+                    persona.saveIt();
+                }
+
+                // crear user
                 String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
-                ac.set("name", name); // Asigna el nombre de usuario.
-                ac.set("password", hashedPassword); // Asigna la contraseña hasheada.
-                ac.saveIt(); // Guarda el nuevo usuario en la tabla 'users'.
+                User user = new User();
+                user.set("name", name);
+                user.set("password", hashedPassword);
+                user.set("dni", dni);
+                user.saveIt();
 
-                res.status(201); // Código de estado HTTP 201 (Created) para una creación exitosa.
-                // Redirige al formulario de creación con un mensaje de éxito.
-                res.redirect("/user/create?message=Cuenta creada exitosamente para " + name + "!");
-                return ""; // Retorna una cadena vacía.
+                Base.commitTransaction();
+
+                res.redirect("/user/create?message=Usuario creado correctamente");
 
             } catch (Exception e) {
-                // Si ocurre cualquier error durante la operación de DB (ej. nombre de usuario duplicado),
-                // se captura aquí y se redirige con un mensaje de error.
-                System.err.println("Error al registrar la cuenta: " + e.getMessage());
-                e.printStackTrace(); // Imprime el stack trace para depuración.
-                res.status(500); // Código de estado HTTP 500 (Internal Server Error).
-                res.redirect("/user/create?error=Error interno al crear la cuenta. Intente de nuevo.");
-                return ""; // Retorna una cadena vacía.
+                Base.rollbackTransaction();
+                e.printStackTrace();
+                res.redirect("/user/create?error=Error al crear usuario");
             }
+
+            return null;
         });
 
 
@@ -315,89 +357,164 @@ public class App {
         }, new MustacheTemplateEngine());
 
         post("/get_docente", (req, res) -> {
+            String dniStr = req.queryParams("dni");
+            String realName = req.queryParams("realName");
+            String surname = req.queryParams("surname");
+            String nombreMateria = req.queryParams("nombreMateria");
+            String idCarreraStr = req.queryParams("id_carrera");
+            String departament = req.queryParams("departament");
+            String correo = req.queryParams("correo");
+            String telefono = req.queryParams("telefono");
+
+            // --- VALIDACIÓN ---
+            if (dniStr == null || dniStr.isEmpty() ||
+                realName == null || realName.isEmpty() ||
+                surname == null || surname.isEmpty() ||
+                nombreMateria == null || nombreMateria.isEmpty() ||
+                idCarreraStr == null || idCarreraStr.isEmpty() ||
+                departament == null || departament.isEmpty()) {
+
+                res.redirect("/get_docente?error=Todos los campos son obligatorios.");
+                return null;
+            }
+
+            Integer dni;
+            Integer idCarrera;
+
             try {
-                String dni = req.queryParams("dni");
-                String realName = req.queryParams("realName");
-                String surname = req.queryParams("surname");
-                String nombreMateria = req.queryParams("nombreMateria");
-                String id_carrera = req.queryParams("id_carrera");
-                String departament = req.queryParams("departament");
-                String correo = req.queryParams("correo");
+                dni = Integer.valueOf(dniStr);
+                idCarrera = Integer.valueOf(idCarreraStr);
+            } catch (NumberFormatException e) {
+                res.redirect("/get_docente?error=Datos numéricos inválidos.");
+                return null;
+            }
 
-                if(dni == null || dni.isEmpty() || realName == null || realName.isEmpty() || surname == null || surname.isEmpty() || nombreMateria == null || nombreMateria.isEmpty() || id_carrera == null || id_carrera.isEmpty() ||departament == null || departament.isEmpty() ||correo == null || correo.isEmpty()) {
-                    res.redirect("/get_docente?error=Todos los campos son obligatorios.");
-                    return null;
-                }
-                Integer dniD = Integer.valueOf(dni);
+            try {
+                Base.openTransaction();
 
+                // --- PERSONA ---
+                Persona persona = Persona.findFirst("dni = ?", dni);
 
-                // Verificmo si ya existe una persoma con ese dni y correo
-                Persona persona = Persona.findFirst("dni = ?", dniD);
-                if(persona == null){
+                if (persona == null) {
                     persona = new Persona();
-                    persona.setDni(dniD);
-                    persona.setRealName(realName);
-                    persona.setSurname(surname);
+                    persona.set("dni", dni);
+                    persona.set("realName", realName);
+                    persona.set("surname", surname);
+                    persona.set("correo", correo);
+                    persona.set("telefono", (telefono != null && !telefono.isEmpty()) ? telefono : "0");
                     persona.saveIt();
                 }
 
-                //ahora  creamos el docente
-                //lo mismo con el docente verifico si existe y si el correo esta registrado
-                Docente docente = Docente.findFirst("dni = ?", dniD);
-                if(docente == null ){
+                // --- DOCENTE ---
+                Docente docente = Docente.findFirst("dni = ?", dni);
+
+                if (docente == null) {
                     docente = new Docente();
-                    docente.setDni(dniD);
-                    docente.setDepartament(departament);
-                    docente.setCorreo(correo);
+                    docente.set("dni", dni);
+                    docente.set("departament", departament);
                     docente.saveIt();
                 }
 
-                //ahora creamos la materia
-                Materia materia = Materia.findFirst("encargado = ?", dniD);
-                if(materia == null){
+                // --- MATERIA ---
+                Materia materia = Materia.findFirst("nombreMateria = ?", nombreMateria);
+
+                if (materia == null) {
                     materia = new Materia();
-                    materia.setEncargado(dniD);
+                    materia.set("nombreMateria", nombreMateria);
+                    materia.set("id_carrera", idCarrera);
+                    materia.saveIt();
                 }
-                materia.setNombreMateria(nombreMateria);
-                materia.setIdCarrera(Integer.valueOf(id_carrera));
-                materia.saveIt();
+
+                // --- DICTADO (EVITAR DUPLICADOS) ---
+                Dictado existente = Dictado.findFirst(
+                    "dniDocente = ? AND id_materia = ?", dni, materia.getIdMateria()
+                );
+
+                if (existente == null) {
+                    Dictado dictado = new Dictado();
+                    dictado.set("dniDocente", dni);
+                    dictado.set("id_materia", materia.getIdMateria());
+                    dictado.set("cargo", "TITULAR");
+                    dictado.set("dedicacion", "SIMPLE");
+                    dictado.set("fechaInicio", "2024-01-01");
+                    dictado.saveIt();
+                }
+
+                Base.commitTransaction();
+
+                res.redirect("/post_docente?message=Docente cargado exitosamente");
 
             } catch (Exception e) {
+                Base.rollbackTransaction();
                 e.printStackTrace();
                 res.redirect("/get_docente?error=Error al registrar el docente");
             }
-            res.redirect("/post_docente?message=Docente cargado exitosamente");
+
             return null;
         });
 
         //ahora mostrar los docentes
         get("/post_docente", (req, res) -> {
             Map<String, Object> model = new HashMap<>();
+
             String success = req.queryParams("message");
-            if(success != null && !success.isEmpty()){
+            if (success != null && !success.isEmpty()) {
                 model.put("successMessage", success);
             }
-            var docentes = Docente.findAll(); // Obtiene todos los registros de la tabla 'docente'.
 
-            java.util.List<Map<String, Object>> docenteList = new java.util.ArrayList<>();
+            List<Map<String, Object>> docenteList = new ArrayList<>();
 
-            for (Model m : docentes) {
-                Docente docente = (Docente) m; // casteo al modelo Docente
-                Integer dni = docente.getInteger("dni"); // obtiene el dni del docente
-                Persona persona = Persona.findFirst("dni = ?", dni); // busca la persona usando el mismo dni
-                Materia materia = Materia.findFirst("encargado = ?", dni); // busca la materia usando el mismo dni
-                Map<String, Object> docenteData = new HashMap<>();
-                docenteData.put("dni", persona.getDni());
-                docenteData.put("nombre", persona.getRealName());
-                docenteData.put("apellido", persona.getSurname());
-                docenteData.put("nombreMateria", materia.getNombreMateria());
-                docenteData.put("id_carrera", materia.getIdCarrera());
-                docenteData.put("departament", docente.getDepartament());
-                docenteData.put("correo", docente.getCorreo());
-                docenteList.add(docenteData);
+            List<Docente> docentes = Docente.findAll();
+
+            for (Docente docente : docentes) {
+
+                Integer dni = docente.getInteger("dni");
+
+                Persona persona = Persona.findFirst("dni = ?", dni);
+                
+                Dictado dictado = Dictado.findFirst("dniDocente = ?", dni);
+                
+                System.out.println("DICTADO: " + dictado);
+                
+                Materia materia = null;
+
+                if (dictado != null) {
+                   materia = Materia.findFirst("id_materia = ?", dictado.getIdMateria());
+                }
+
+                Map<String, Object> data = new HashMap<>();
+
+                // --- PERSONA ---
+                if (persona != null) {
+                    data.put("dni", persona.getInteger("dni"));
+                    data.put("realName", persona.getString("realName"));
+                    data.put("surname", persona.getString("surname"));
+                    data.put("correo", persona.getString("correo"));
+                } else {
+                    data.put("dni", dni);
+                    data.put("realName", "N/A");
+                    data.put("surname", "N/A");
+                }
+
+                // --- DOCENTE ---
+                data.put("departament", docente.getString("departament"));
+
+                // --- MATERIA ---
+                if (materia != null) {
+                    data.put("nombreMateria", materia.getNombreMateria());
+                    data.put("id_carrera", materia.getIdCarrera());
+                } else {
+                    data.put("nombreMateria", "Sin materia");
+                    data.put("id_carrera", "-");
+                }
+
+                docenteList.add(data);
             }
+
             model.put("docentes", docenteList);
+
             return new ModelAndView(model, "post_docente.mustache");
+
         }, new MustacheTemplateEngine());
 
         
