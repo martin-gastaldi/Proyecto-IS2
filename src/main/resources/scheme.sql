@@ -31,7 +31,7 @@ CREATE TABLE persona (
     telefono TEXT NOT NULL,
     correo TEXT UNIQUE
 );
-CREATE TABLE docente (              --en duda atributos cuil y salario.
+CREATE TABLE docente (
     dni INTEGER PRIMARY KEY,
     departament TEXT NOT NULL,
     cuil TEXT,
@@ -54,7 +54,7 @@ CREATE TABLE administrador (
         ON UPDATE CASCADE
 );
 CREATE TABLE materia (
-    id_materia INTEGER PRIMARY KEY AUTOINCREMENT, --materia debe tener su id propio no encargado como id
+    id_materia INTEGER PRIMARY KEY AUTOINCREMENT,
     nombreMateria TEXT NOT NULL,
     anio INTEGER,
     cuatrimestre INTEGER,
@@ -80,7 +80,7 @@ CREATE TABLE plan_estudio (
     FOREIGN KEY (id_carrera) REFERENCES carrera(id_carrera)
         ON DELETE CASCADE
 );
---Relacion N..N, una materia puede estar en varios planes?
+--Relacion N..N
 CREATE TABLE plan_materia (
     id_plan INTEGER,
     id_materia INTEGER,
@@ -129,7 +129,7 @@ CREATE TABLE dictado (
     FOREIGN KEY (id_materia) REFERENCES materia(id_materia)
         ON DELETE CASCADE
 );
---Relacion Materia a Materia, dudo que este bien
+--Relacion Materia a Materia.
 CREATE TABLE correlatividad (
     id_materia INTEGER,
     id_correlativa INTEGER,
@@ -141,3 +141,12 @@ CREATE TABLE correlatividad (
         ON DELETE CASCADE
 );
 
+-- Insertar administrador por defecto (con contraseña "admin123" hasheada).
+INSERT INTO persona (dni, realName, surname, telefono, correo) 
+VALUES (12345678, 'Admin', 'Sistema', '1234567890', 'admin@sistema.com');
+
+INSERT INTO administrador (dni) 
+VALUES (12345678);
+
+INSERT INTO users (name, password, dni) 
+VALUES ('admin', '$2a$10$PqHRcarvc/bJIizSJ9hwHudS1zsjk0bSnIP6bv7GfzyTjxtUyYu.G', 12345678);

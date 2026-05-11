@@ -20,11 +20,11 @@ public class User extends Model {
     }
 
     public void setDni(Integer dni) {
-        set("dni", dni); // Establece el valor para la columna 'name'
+        set("dni", dni); // Establece el valor para la columna 'dni'
     }
 
     public Integer getDni() {
-        return getInteger("dni"); // Obtiene el valor de la columna 'password'
+        return getInteger("dni"); // Obtiene el valor de la columna 'dni'
     }
 
     public void setName(String name) {
@@ -39,4 +39,21 @@ public class User extends Model {
         set("password", password); // Establece el valor para la columna 'password'
     }
 
+    /**
+     * @post Verifica si este usuario es un administrador.
+     */
+    public boolean esAdministrador () {
+        Integer dni = this.getDni ();
+        if (dni != null) {
+            return Administrador.esAdministrador (dni);
+        }
+        return false;
+    }
+
+    /**
+     * @post Obtiene el administrador asociado a este usuario (si es que es administrador).
+     */
+    public Administrador obtenerAdministrador () {
+        return Administrador.obtenerPorUsuario (this);
+    }
 }
