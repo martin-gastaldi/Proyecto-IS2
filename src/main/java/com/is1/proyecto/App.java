@@ -10,6 +10,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import com.fasterxml.jackson.databind.ObjectMapper; // Utilidad para hashear y verificar contraseñas de forma segura.
 import com.is1.proyecto.config.DBConfigSingleton; // Representa un modelo de datos y el nombre de la vista a renderizar.
+import com.is1.proyecto.models.Administrador; // Modelo de administrador.
 import com.is1.proyecto.models.Dictado; // Motor de plantillas Mustache para Spark.
 import com.is1.proyecto.models.Docente;
 import com.is1.proyecto.models.Materia; // Para crear mapas de datos (modelos para las plantillas).
@@ -288,6 +289,18 @@ public class App {
                 System.out.println("DEBUG: Login exitoso para la cuenta: " + username);
                 System.out.println("DEBUG: ID de Sesión: " + req.session().id());
 
+                // --- Verificar si es administrador ---
+                boolean esAdmin = ac.esAdministrador ();
+                req.session ().attribute ("isAdmin", esAdmin);
+
+                if (esAdmin) {
+                    System.out.println ("DEBUG: El usuario " + username + " es administrador.");
+                    model.put ("username", username);
+                    model.put ("isAdmin", true);
+                    // Redirige al panel de administrador en lugar del dashboard.
+                    res.redirect ("/admin/panel");
+                    return null;
+                }
 
                 model.put("username", username); // Añade el nombre de usuario al modelo para el dashboard.
                 // Renderiza la plantilla del dashboard tras un login exitoso.
@@ -517,6 +530,182 @@ public class App {
 
         }, new MustacheTemplateEngine());
 
-        
+        // --- RUTAS DE ADMINISTRACIÓN ---
+
+        // GET: Panel de administrador - Página principal del administrador-
+        get ("/admin/panel", (req, res) -> {
+            Map <String, Object> model = new HashMap <> ();
+
+            // Verificar si el usuario está autenticado y es administrador.
+            String currentUsername = req.session ().attribute ("currentUserUsername");
+            Boolean loggedIn = req.session ().attribute ("loggedIn");
+            Boolean isAdmin = req.session ().attribute ("isAdmin");
+
+            if (currentUsername == null || loggedIn == null || !loggedIn || isAdmin == null || !isAdmin) {
+                System.out.println ("DEBUG: Acceso no autorizado a /admin/panel. Redirigiendo a /login.");
+                res.redirect ("/login?error=Debes ser administrador para acceder a esta página.");
+                return null;
+            }
+
+            model.put ("adminUsername", currentUsername);
+            return new ModelAndView (model, "admin_dashboard.mustache");
+        }, new MustacheTemplateEngine ());
+
+        // GET: Formulario para crear un nuevo administrador.
+        get ("/admin/create", (req, res) -> {
+            Map <String, Object> model = new HashMap<>();
+
+            // Verificar si el usuario está autenticado y es administrador.
+            String currentUsername = req.session ().attribute ("currentUserUsername");
+            Boolean loggedIn = req.session ().attribute ("loggedIn");
+            Boolean isAdmin = req.session ().attribute ("isAdmin");
+
+            if (currentUsername == null || loggedIn == null || !loggedIn || isAdmin == null || !isAdmin) {
+                System.out.println ("DEBUG: Acceso no autorizado a /admin/create. Redirigiendo a /login.");
+                res.redirect ("/login?error=Debes ser administrador para acceder a esta página.");
+                return null;
+            }
+
+            // Obtener mensajes de éxito o error.
+            String successMessage = req.queryParams ("message");
+            String errorMessage = req.queryParams ("error");
+
+            if (successMessage != null && !successMessage.isEmpty ()) {
+                model.put ("successMessage", successMessage);
+            }
+            if (errorMessage != null && !errorMessage.isEmpty ()) {
+                model.put ("errorMessage", errorMessage);
+            }
+
+            model.put ("adminUsername", currentUsername);
+            return new ModelAndView (model, "admin_create_form.mustache");
+        }, new MustacheTemplateEngine ());
+
+        // POST: Crear un nuevo administrador.
+        post ("/admin/create", (req, res) -> {
+            // Verificar si el usuario está autenticado y es administrador.
+            String currentUsername = req.session ().attribute ("currentUserUsername");
+            Boolean loggedIn = req.session ().attribute ("loggedIn");
+            Boolean isAdmin = req.session ().attribute ("isAdmin");
+
+            if (currentUsername == null || loggedIn == null || !loggedIn || isAdmin == null || !isAdmin) {
+                System.out.println ("DEBUG: Intento de crear admin sin autorización.");
+                res.status (403);
+                res.redirect ("/login?error=Debes ser administrador para realizar esta acción.");
+                return null;
+            }
+
+            // Obtener parámetros del formulario.
+            String username = req.queryParams ("username");
+            String password = req.queryParams ("password");
+            String passwordConfirm = req.queryParams ("passwordConfirm");
+            String realName = req.queryParams ("realName");
+            String surname = req.queryParams ("surname");
+            String dniStr = req.queryParams ("dni");
+            String correo = req.queryParams ("correo");
+            String telefono = req.queryParams ("telefono");
+
+            // --- VALIDACIONES ---
+            if (username == null || username.isEmpty () ||
+                password == null || password.isEmpty () ||
+                passwordConfirm == null || passwordConfirm.isEmpty () ||
+                realName == null || realName.isEmpty () ||
+                surname == null || surname.isEmpty () ||
+                dniStr == null || dniStr.isEmpty () ||
+                correo == null || correo.isEmpty () ||
+                telefono == null || telefono.isEmpty ()) {
+
+                res.redirect ("/admin/create?error=Todos los campos son obligatorios.");
+                return null;
+            }
+
+            // Verificar que las contraseñas coincidan.
+            if (!password.equals (passwordConfirm)) {
+                res.redirect ("/admin/create?error=Las contraseñas no coinciden.");
+                return null;
+            }
+
+            // Verificar longitud mínima de contraseña.
+            if (password.length () < 6) {
+                res.redirect ("/admin/create?error=La contraseña debe tener al menos 6 caracteres.");
+                return null;
+            }
+
+            Integer dni;
+            try {
+                dni = Integer.valueOf (dniStr);
+            } catch (NumberFormatException e) {
+                res.redirect ("/admin/create?error=DNI inválido.");
+                return null;
+            }
+
+            // Validar que el username no exista.
+            if (User.findFirst ("name = ?", username) != null) {
+                res.redirect ("/admin/create?error=El nombre de usuario ya existe.");
+                return null;
+            }
+
+            // Validar que el DNI no exista en users.
+            if (User.findFirst ("dni = ?", dni) != null) {
+                res.redirect ("/admin/create?error=Esta persona ya tiene un usuario.");
+                return null;
+            }
+
+            try {
+                Base.openTransaction ();
+
+                // Buscar o crear persona.
+                Persona persona = Persona.findFirst ("dni = ?", dni);
+
+                if (persona == null) {
+                    // Crear nueva persona.
+                    persona = new Persona ();
+                    persona.set ("dni", dni);
+                    persona.set ("realName", realName);
+                    persona.set ("surname", surname);
+                    persona.set ("correo", correo);
+                    persona.set ("telefono", telefono);
+                    persona.saveIt ();
+                    System.out.println ("DEBUG: Persona creada con DNI: " + dni);
+                } else {
+                    // Actualizar datos de la persona existente.
+                    persona.set ("realName", realName);
+                    persona.set ("surname", surname);
+                    persona.set ("correo", correo);
+                    persona.set ("telefono", telefono);
+                    persona.saveIt ();
+                    System.out.println ("DEBUG: Persona actualizada con DNI: " + dni);
+                }
+
+                // Crear usuario con contraseña hasheada.
+                String hashedPassword = BCrypt.hashpw (password, BCrypt.gensalt ());
+
+                User newUser = new User ();
+                newUser.set ("name", username);
+                newUser.set ("password", hashedPassword);
+                newUser.set ("dni", dni);
+                newUser.saveIt ();
+                System.out.println ("DEBUG: Usuario creado: " + username);
+
+                // Crear administrador.
+                Administrador admin = new Administrador ();
+                admin.set ("dni", dni);
+                admin.saveIt ();
+                System.out.println ("DEBUG: Administrador creado con DNI: " + dni);
+
+                Base.commitTransaction ();
+
+                System.out.println ("DEBUG: Nuevo administrador creado por: " + currentUsername);
+                res.redirect ("/admin/create?message=Administrador creado exitosamente.");
+
+            } catch (Exception e) {
+                Base.rollbackTransaction ();
+                System.err.println ("ERROR al crear administrador: " + e.getMessage());
+                e.printStackTrace ();
+                res.redirect ("/admin/create?error=Error al crear el administrador.");
+            }
+
+            return null;
+        });
     } // Fin del método main
 } // Fin de la clase App

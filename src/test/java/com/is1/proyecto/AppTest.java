@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.is1.proyecto.config.DBConfigSingleton;
+import com.is1.proyecto.models.Administrador;
 import com.is1.proyecto.models.Docente;
 import com.is1.proyecto.models.Materia;
 import com.is1.proyecto.models.Persona;
@@ -28,11 +29,11 @@ public class AppTest {
 
         user.setName("testUser");
         user.setPassword("1234");
-        user.setDni(123); // 👈 nuevo campo
+        user.setDni(123);
 
         assertEquals("testUser", user.getName());
         assertEquals("1234", user.getPassword());
-        assertEquals(123, user.getDni()); // 👈 validación nueva
+        assertEquals(123, user.getDni());
     }
 
     /**
@@ -91,7 +92,6 @@ public class AppTest {
         assertEquals(1, materia.getIdCarrera());
     }
 
-    
     /**
      * TEST: el singleton devuelve siempre la misma instancia.
      */
@@ -122,5 +122,44 @@ public class AppTest {
         DBConfigSingleton config = DBConfigSingleton.getInstance ();
 
         assertDoesNotThrow (() -> {config.openConnection (); config.closeConnection ();});
+    }
+
+    /**
+     * TEST: getters y setters del modelo Administrador.
+     */
+    @Test
+    void testAdministrador_gettersAndSetters () {
+        Administrador admin = new Administrador ();
+
+        admin.setDni (98765432);
+
+        assertEquals (98765432, admin.getDni ());
+    }
+
+    /**
+     * TEST: User.esAdministrador retorna false si dni es null.
+     */
+    @Test
+    void testUser_esAdministrador_dniNull () {
+        User user = new User ();
+
+        user.setName ("testUser");
+        user.setPassword ("1234");
+        // dni no se setea, queda null.
+
+        assertEquals (null, user.getDni ());
+    }
+
+    /**
+     * TEST: Administrador.obtenerPorUsuario retorna null si user dni es null.
+     */
+    @Test
+    void testAdministrador_obtenerPorUsuario_dniNull () {
+        User user = new User ();
+        user.setName ("testUser");
+
+        Administrador admin = Administrador.obtenerPorUsuario (user);
+
+        assertEquals (null, admin);
     }
 }
