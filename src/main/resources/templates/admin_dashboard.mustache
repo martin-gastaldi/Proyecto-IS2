@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang = "es">
+<head>
+    <meta charset = "UTF-8">
+    <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Sistema Académico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .admin-info {
+            background: #f0f4ff;
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .admin-info strong {
+            color: #333;
+        }
+
+        .admin-info span {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .menu-item {
+            padding: 25px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .menu-item:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f5f7ff 0%, #ede7f6 100%);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .menu-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .menu-item p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .menu-item.icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+        }
+
+        .quick-links {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .quick-links h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .quick-links a {
+            display: inline-block;
+            margin: 5px 10px 5px 0;
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .quick-links a:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class = "container">
+        <div class = "header">
+            <h1>🔐 Panel de Administración</h1>
+            <p>Sistema de Gestión Académica</p>
+        </div>
+
+        <div class = "admin-info">
+            <strong>Administrador:</strong> <span>{{adminUsername}}</span>
+        </div>
+
+        <div class = "menu-grid">
+            <a href = "/admin/create" class = "menu-item">
+                <div class = "icon">👤</div>
+                <h3>Crear Administrador</h3>
+                <p>Añadir nuevo usuario administrador al sistema</p>
+            </a>
+
+            <div class = "menu-item" style = "opacity: 0.6; cursor: not-allowed;">
+                <div class = "icon">📚</div>
+                <h3>Gestionar Materias</h3>
+                <p>Crear, editar y eliminar materias</p>
+                <small style = "color: #999;">(Próximamente)</small>
+            </div>
+
+            <div class = "menu-item" style = "opacity: 0.6; cursor: not-allowed;">
+                <div class = "icon">👨‍🎓</div>
+                <h3>Gestionar Estudiantes</h3>
+                <p>Administrar datos de estudiantes</p>
+                <small style = "color: #999;">(Próximamente)</small>
+            </div>
+
+            <div class = "menu-item" style = "opacity: 0.6; cursor: not-allowed;">
+                <div class = "icon">👨‍🏫</div>
+                <h3>Gestionar Docentes</h3>
+                <p>Administrar datos de docentes</p>
+                <small style = "color: #999;">(Próximamente)</small>
+            </div>
+
+            <div class = "menu-item" style = "opacity: 0.6; cursor: not-allowed;">
+                <div class = "icon">📋</div>
+                <h3>Planes de Estudio</h3>
+                <p>Crear y modificar planes de estudio</p>
+                <small style = "color: #999;">(Próximamente)</small>
+            </div>
+
+            <div class = "menu-item" style = "opacity: 0.6; cursor: not-allowed;">
+                <div class = "icon">📊</div>
+                <h3>Reportes</h3>
+                <p>Generar reportes académicos</p>
+                <small style = "color: #999;">(Próximamente)</small>
+            </div>
+        </div>
+
+        <div class = "actions">
+            <a href = "/logout" class = "btn btn-danger">Cerrar Sesión</a>
+            <a href = "/" class = "btn btn-secondary">Ir al Inicio</a>
+        </div>
+    </div>
+</body>
+</html>
