@@ -15,7 +15,7 @@ import com.is1.proyecto.models.Docente;
 import com.is1.proyecto.models.Materia; // Para crear mapas de datos (modelos para las plantillas).
 import com.is1.proyecto.models.Persona; // Interfaz Map, utilizada para Map.of() o HashMap.
 import com.is1.proyecto.models.User; // Clase Singleton para la configuración de la base de datos.
-
+import com.is1.proyecto.services.Correlatividades;
 import spark.ModelAndView; // Modelo de ActiveJDBC que representa la tabla 'users'.
 import static spark.Spark.after;
 import static spark.Spark.before;

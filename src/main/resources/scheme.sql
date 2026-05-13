@@ -80,16 +80,6 @@ CREATE TABLE plan_estudio (
     FOREIGN KEY (id_carrera) REFERENCES carrera(id_carrera)
         ON DELETE CASCADE
 );
---Relacion N..N, una materia puede estar en varios planes?
-CREATE TABLE plan_materia (
-    id_plan INTEGER,
-    id_materia INTEGER,
-    PRIMARY KEY (id_plan, id_materia),
-    FOREIGN KEY (id_plan) REFERENCES plan_estudio(id_plan)
-        ON DELETE CASCADE,
-    FOREIGN KEY (id_materia) REFERENCES materia(id_materia)
-        ON DELETE CASCADE
-);
 --Relacion N..N
 CREATE TABLE inscripcion (
     dniEstudiante INTEGER,
