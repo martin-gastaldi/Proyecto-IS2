@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Docente</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>👨‍🏫 Registrar Docente</h1>
+
+    {{#successMessage}}
+        <div class="success">{{successMessage}}</div>
+    {{/successMessage}}
+
+    {{#errorMessage}}
+        <div class="error">{{errorMessage}}</div>
+    {{/errorMessage}}
+
+    <form action="/get_docente" method="POST">
+
+        <input type="text"
+            name="dni"
+            placeholder="DNI">
+
+        <input type="text"
+            name="realName"
+            placeholder="Nombre">
+
+        <input type="text"
+            name="surname"
+            placeholder="Apellido">
+        
+        <input type="text"
+            name="username"
+            placeholder="Usuario">
+
+        <input type="password"
+            name="password"
+            placeholder="Contraseña">
+
+        <input type="email"
+            name="correo"
+            placeholder="Correo">
+
+        <input type="text"
+            name="telefono"
+            placeholder="Teléfono">
+
+        <input type="text"
+            name="departament"
+            placeholder="Departamento">
+
+        <input type="text"
+            name="nombreMateria"
+            placeholder="Materia">
+            
+        <input type="number"
+            name="anio"
+            placeholder="Año">
+
+        <input type="number"
+            name="cuatrimestre"
+            placeholder="Cuatrimestre">
+        
+        <input type="number"
+            name="id_carrera"
+            placeholder="ID Carrera">
+
+        <button type="submit">
+            Crear docente
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

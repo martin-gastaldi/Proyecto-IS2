@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Materias del Docente</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0e4e0e;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f5f7ff;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            background: #2e9c34;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <h1>📚 Materias asignadas</h1>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Materia</th>
+                <th>Año</th>
+                <th>Cuatrimestre</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {{#materias}}
+
+            <tr>
+                <td>{{nombreMateria}}</td>
+                <td>{{anio}}</td>
+                <td>{{cuatrimestre}}</td>
+                <td>
+                    <a class="btn" href="/docente/alumnos/{{id}}">
+                        Ver alumnos
+                    </a>
+                </td>
+            </tr>
+
+        {{/materias}}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>

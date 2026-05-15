@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Alumnos de la Materia</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2ff;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f5f7ff;
+        }
+
+        .estado {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <h1>👨‍🎓 Alumnos inscriptos</h1>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Legajo</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Estado</th>
+                <th>Nota Final</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {{#alumnos}}
+
+            <tr>
+                <td>{{legajo}}</td>
+                <td>{{nombre}}</td>
+                <td>{{apellido}}</td>
+                <td class="estado">{{estado}}</td>
+                <td>{{notaFinal}}</td>
+            </tr>
+
+        {{/alumnos}}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>
