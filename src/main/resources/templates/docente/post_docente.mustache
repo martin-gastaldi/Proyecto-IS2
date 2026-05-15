@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Docentes</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2ff;
+            padding: 40px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .docente {
+            border-bottom: 1px solid #ccc;
+            padding: 15px 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>👨‍🏫 Lista de Docentes</h1>
+
+    {{#docentes}}
+
+        <div class="docente">
+
+            <p><strong>DNI:</strong> {{dni}}</p>
+
+            <p><strong>Nombre:</strong> {{realName}}</p>
+
+            <p><strong>Apellido:</strong> {{surname}}</p>
+
+            <p><strong>Correo:</strong> {{correo}}</p>
+
+            <p><strong>Departamento:</strong> {{departament}}</p>
+
+            <p><strong>Materia:</strong> {{nombreMateria}}</p>
+
+        </div>
+
+    {{/docentes}}
+
+</div>
+
+</body>
+</html>
