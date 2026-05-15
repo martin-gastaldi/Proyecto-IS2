@@ -50,6 +50,18 @@ public class User extends Model {
         return false;
     }
 
+    public boolean esDocente() {
+
+        Integer dni = getInteger("dni");
+
+        Docente docente = Docente.findFirst(
+                "dni = ?",
+                dni
+        );
+
+        return docente != null;
+    }
+
     /**
      * @post Obtiene el administrador asociado a este usuario (si es que es administrador).
      */
