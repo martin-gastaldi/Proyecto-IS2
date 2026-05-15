@@ -189,62 +189,78 @@
     </style>
 </head>
 <body>
-    <div class = "container">
-        <div class = "header">
+    <div class="container">
+        <div class="header">
             <h1>🔐 Panel de Administración</h1>
             <p>Sistema de Gestión Académica</p>
         </div>
 
-        <div class = "admin-info">
+        <div class="admin-info">
             <strong>Administrador:</strong> <span>{{adminUsername}}</span>
         </div>
 
-        <div class = "menu-grid">
-            <a href = "/admin/create" class = "menu-item">
-                <div class = "icon">👤</div>
+        <div class="menu-grid">
+
+            <a href="/admin/create" class="menu-item">
+                <div class="icon">👤</div>
                 <h3>Crear Administrador</h3>
                 <p>Añadir nuevo usuario administrador al sistema</p>
             </a>
 
-            <div class = "menu-item" style = "opacity: 0.6; cursor: not-allowed;">
-                <div class = "icon">📚</div>
+            <div class="menu-item" style="opacity: 0.6; cursor: not-allowed;">
+                <div class="icon">📚</div>
                 <h3>Gestionar Materias</h3>
                 <p>Crear, editar y eliminar materias</p>
-                <small style = "color: #999;">(Próximamente)</small>
+                <small style="color: #999;">(Próximamente)</small>
             </div>
 
-            <div class = "menu-item" style = "opacity: 0.6; cursor: not-allowed;">
-                <div class = "icon">👨‍🎓</div>
+            <div class="menu-item" style="opacity: 0.6; cursor: not-allowed;">
+                <div class="icon">👨‍🎓</div>
                 <h3>Gestionar Estudiantes</h3>
                 <p>Administrar datos de estudiantes</p>
-                <small style = "color: #999;">(Próximamente)</small>
+                <small style="color: #999;">(Próximamente)</small>
             </div>
 
-            <div class = "menu-item" style = "opacity: 0.6; cursor: not-allowed;">
-                <div class = "icon">👨‍🏫</div>
+            <div class="menu-item" style="opacity: 0.6; cursor: not-allowed;">
+                <div class="icon">👨‍🏫</div>
                 <h3>Gestionar Docentes</h3>
                 <p>Administrar datos de docentes</p>
-                <small style = "color: #999;">(Próximamente)</small>
+                <small style="color: #999;">(Próximamente)</small>
             </div>
 
-            <div class = "menu-item" style = "opacity: 0.6; cursor: not-allowed;">
-                <div class = "icon">📋</div>
+            <div class="menu-item" style="opacity: 0.6; cursor: not-allowed;">
+                <div class="icon">📋</div>
                 <h3>Planes de Estudio</h3>
                 <p>Crear y modificar planes de estudio</p>
-                <small style = "color: #999;">(Próximamente)</small>
+                <small style="color: #999;">(Próximamente)</small>
             </div>
 
-            <div class = "menu-item" style = "opacity: 0.6; cursor: not-allowed;">
-                <div class = "icon">📊</div>
+            <div class="menu-item" style="opacity: 0.6; cursor: not-allowed;">
+                <div class="icon">📊</div>
                 <h3>Reportes</h3>
                 <p>Generar reportes académicos</p>
-                <small style = "color: #999;">(Próximamente)</small>
+                <small style="color: #999;">(Próximamente)</small>
             </div>
+
+            <!-- AGREGAR DOCENTES -->
+            <a href="/get_docente" class="menu-item">
+                <div class="icon">➕</div>
+                <h3>Agregar Docentes</h3>
+                <p>Agrega nuevos docentes al sistema</p>
+            </a>
+
+            <!-- MOSTRAR DOCENTES -->
+            <a href="/post_docente" class="menu-item">
+                <div class="icon">📄</div>
+                <h3>Mostrar Docentes</h3>
+                <p>Muestra todos los docentes de la base de datos</p>
+            </a>
+
         </div>
 
-        <div class = "actions">
-            <a href = "/logout" class = "btn btn-danger">Cerrar Sesión</a>
-            <a href = "/" class = "btn btn-secondary">Ir al Inicio</a>
+        <div class="actions">
+            <a href="/logout" class="btn btn-danger">Cerrar Sesión</a>
+            <a href="/" class="btn btn-secondary">Ir al Inicio</a>
         </div>
     </div>
 </body>

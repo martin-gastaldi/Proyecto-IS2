@@ -1,8 +1,10 @@
 package com.is1.proyecto.models;
 import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.annotations.IdName;
 import org.javalite.activejdbc.annotations.Table;
 
 @Table ("materia") //relaciona esta clase con la bdd
+@IdName("id_materia")
 public class Materia extends Model {
      
     

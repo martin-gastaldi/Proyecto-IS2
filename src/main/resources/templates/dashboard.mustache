@@ -4,46 +4,210 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Bienvenido</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #5b0f1a 0%, #8b1e2d 50%, #b03045 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 4px solid #8b1e2d;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.7rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .welcome-box {
+            background: #fff4f5;
+            border-left: 6px solid #8b1e2d;
+            padding: 22px;
+            border-radius: 10px;
+            margin-bottom: 35px;
+        }
+
+        .welcome-box p {
+            font-size: 1.2rem;
+            color: #444;
+        }
+
+        .username {
+            color: #8b1e2d;
+            font-weight: bold;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .card {
+            border: 2px solid #ececec;
+            border-radius: 12px;
+            padding: 30px;
+            transition: 0.3s ease;
+            background: #fafafa;
+        }
+
+        .card:hover {
+            border-color: #8b1e2d;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(139, 30, 45, 0.2);
+        }
+
+        .card .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            color: #8b1e2d;
+            margin-bottom: 15px;
+            font-size: 1.7rem;
+        }
+
+        .card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            background: linear-gradient(135deg, #8b1e2d 0%, #5b0f1a 100%);
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        .actions {
+            margin-top: 45px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .logout {
+            background: linear-gradient(135deg, #cfc6c6 0%, #d1c4c4 100%);
+        }
+
+    </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Panel de Control</h1>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>🎓 Panel de Control</h1>
+        <p>Sistema de Gestión Académica</p>
+    </div>
+
+    <div class="welcome-box">
 
         {{#username}}
-        <p class="text-xl text-center text-gray-700 mb-8">¡Bienvenido, <span class="font-semibold text-pink-600">{{username}}</span>!</p>
-        {{/username}}
-        {{^username}}
-        <p class="text-xl text-center text-gray-700 mb-8">¡Bienvenido!</p>
+        <p>
+            ¡Bienvenido, <span class="username">{{username}}</span>!
+        </p>
         {{/username}}
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-blue-50 border border-blue-200 p-6 rounded-lg text-center shadow-sm">
-                <h2 class="text-2xl font-bold text-blue-700 mb-3">Tu Perfil</h2>
-                <p class="text-gray-600 mb-4">Gestiona la información de tu cuenta.</p>
-                <a href="/profile" class="inline-block bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300">Ver Perfil</a>
-            </div>
-            <div class="bg-green-50 border border-green-200 p-6 rounded-lg text-center shadow-sm">
-                <h2 class="text-2xl font-bold text-green-700 mb-3">Configuraciones</h2>
-                <p class="text-gray-600 mb-4">Ajusta las preferencias de tu aplicación.</p>
-                <a href="/settings" class="inline-block bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-300">Configuración</a>
-            </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-pink-50 border border-pink-200 p-6 rounded-lg text-center shadow-sm">
-                <h2 class="text-2xl font-bold text-pink-700 mb-3">Agregar docentes</h2>
-                <p class="text-gray-600 mb-4">Agrega a un docente.</p>
-                <a href="/get_docente" class="inline-block bg-pink-600 text-white py-2 px-4 rounded-md hover:bg-pink-700 transition duration-300">Agregar</a>
-            </div>
-            <div class="bg-pink-50 border border-pink-200 p-6 rounded-lg text-center shadow-sm">
-                <h2 class="text-2xl font-bold text-pink-700 mb-3">Mostrar docentes</h2>
-                <p class="text-gray-600 mb-4">Muestra todos los docentes de la base de datos.</p>
-                <a href="/post_docente" class="inline-block bg-pink-600 text-white py-2 px-4 rounded-md hover:bg-pink-700 transition duration-300">Mostrar</a>
-            </div>
-        </div>
-        <div class="text-center mt-6">
-            <a href="/logout" class="inline-block bg-red-600 text-white py-2 px-6 rounded-md hover:bg-red-700 transition duration-300 text-lg">Cerrar Sesión</a>
-        </div>
+        {{^username}}
+        <p>
+            ¡Bienvenido al sistema!
+        </p>
+        {{/username}}
+
     </div>
+
+    <div class="cards-grid">
+
+        <div class="card">
+
+            <div class="icon">👤</div>
+
+            <h2>Tu Perfil</h2>
+
+            <p>
+                Gestiona la información de tu cuenta y visualiza tus datos personales.
+            </p>
+
+            <a href="/profile" class="btn">
+                Ver Perfil
+            </a>
+
+        </div>
+
+        <div class="card">
+
+            <div class="icon">⚙️</div>
+
+            <h2>Configuraciones</h2>
+
+            <p>
+                Ajusta las preferencias y personaliza tu experiencia dentro del sistema.
+            </p>
+
+            <a href="/settings" class="btn">
+                Configuración
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="actions">
+
+        <a href="/" class="btn">
+            Ir al Inicio
+        </a>
+
+       <a href="/logout" class="btn logout" style="color: red;">
+            Cerrar Sesión
+       </a>
+
+    </div>
+
+</div>
+
 </body>
 </html>
