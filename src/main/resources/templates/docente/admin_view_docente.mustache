@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Datos del Docente</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 55px rgba(0, 0, 0, 0.18);
+        }
+
+        .header {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;
+            margin-bottom:24px;
+        }
+        
+        .header h1 {
+            margin:0;
+            font-size:2rem;
+            color:#333;
+        }
+        
+        .button {
+            display:inline-block;
+            padding:12px 18px;
+            border-radius:8px;
+            text-decoration:none;
+            color:white;
+            font-weight:600;
+        }
+        
+        .button.secondary {
+            background:#6c757d;
+        }
+        
+        .card {
+            border:1px solid #e2e7f0;
+            border-radius:14px;
+            padding:24px;
+            background:#fafbff;
+        }
+        
+        .card p {
+            margin:14px 0;
+            color:#34495e;
+        }
+        
+        .materia-list {
+            margin-top:18px;
+        }
+        
+        .materia-list li {
+            margin:10px 0;
+            color:#444;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div>
+            <h1>Datos del Docente</h1>
+            <p>{{docente.nombre}} {{docente.apellido}}</p>
+        </div>
+        <a href="/admin/docentes" class="button secondary">← Volver</a>
+    </div>
+
+    <div class="card">
+        <p><strong>DNI:</strong> {{dni}}</p>
+        <p><strong>Nombre:</strong> {{docente.nombre}}</p>
+        <p><strong>Apellido:</strong> {{docente.apellido}}</p>
+        <p><strong>Correo:</strong> {{docente.correo}}</p>
+        <p><strong>Teléfono:</strong> {{docente.telefono}}</p>
+        <p><strong>Departamento:</strong> {{docente.departamento}}</p>
+        <p><strong>CUIL:</strong> {{docente.cuil}}</p>
+        <p><strong>Materias asignadas:</strong></p>
+        <ul class="materia-list">
+            {{#materias}}
+            <li>
+                {{nombreMateria}} (Año {{anio}} - Cuatr. {{cuatrimestre}})
+                <div>Cargo: {{cargo}}, Dedicación: {{dedicacion}}</div>
+                <div>Inicio: {{fechaInicio}}{{#fechaFin}} • Fin: {{fechaFin}}{{/fechaFin}}</div>
+            </li>
+            {{/materias}}
+            {{^materias}}
+            <li>Sin materias asignadas</li>
+            {{/materias}}
+        </ul>
+    </div>
+</div>
+</body>
+</html>

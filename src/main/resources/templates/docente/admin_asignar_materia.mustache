@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Asignar Materia</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 55px rgba(0,0,0,0.18);
+        }
+
+        .header {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;
+            margin-bottom:24px;
+        }
+        
+        .header h1 {
+            margin:0;
+            font-size:2rem;
+            color:#333;
+        }
+        
+        .button {
+            display:inline-block;
+            padding:12px 18px;
+            border-radius:8px;
+            text-decoration:none;
+            color:white;
+            font-weight:600;
+        }
+        
+        .button.secondary {
+            background:#6c757d;
+        }
+
+        .form-group {
+            margin-bottom:16px;
+        }
+
+        .form-group-row {
+            display:grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap:12px;
+            align-items: start;
+        }
+
+        .form-group-row .form-group {
+            margin-bottom:0;
+        }
+        
+        label {
+            display:block;
+            margin-bottom:6px;
+            color:#333;
+            font-weight:600;
+        }
+
+        select, input[type="date"] {
+            width:100%;
+            max-width:100%;
+            padding:8px 10px;
+            border:1px solid #cbd5e1;
+            border-radius:8px;
+            box-sizing:border-box;
+        }
+
+        .form-group-row input[type="date"] {
+            min-height:38px;
+        }
+        
+        button {
+            display:block;
+            width:100%;
+            margin-top:14px;
+            padding:12px 14px;
+            border:none;
+            border-radius:10px;
+            background:#1cc88a;
+            color:white;
+            font-weight:700;
+            cursor:pointer;
+        }
+
+        .materia-current {
+            margin-top:24px;
+        }
+
+        .materia-current li {
+            margin:10px 0;
+            color:#33475b;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div>
+            <h1>Materias del Docente</h1>
+            <p>Docente: {{docente.nombre}} {{docente.apellido}} (DNI: {{dni}})</p>
+        </div>
+        <a href="/admin/docentes" class="button secondary">← Volver</a>
+    </div>
+
+    <form action="/admin/docentes/asignar" method="POST">
+        <input type="hidden" name="dni" value="{{dni}}">
+        <div class="form-group">
+            <label>Materia</label>
+            <select name="id_materia" required>
+                <option value="">Seleccionar materia</option>
+                {{#materias}}
+                <option value="{{id_materia}}">{{nombreMateria}} (Año {{anio}} - Cuatr. {{cuatrimestre}})</option>
+                {{/materias}}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Cargo</label>
+            <select name="cargo" required>
+                <option value="">Seleccionar cargo</option>
+                <option value="TITULAR">TITULAR</option>
+                <option value="JEFE_PRACTICA">JEFE DE PRÁCTICA</option>
+                <option value="AYUDANTE">AYUDANTE</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Dedicación</label>
+            <select name="dedicacion" required>
+                <option value="">Seleccionar dedicación</option>
+                <option value="SIMPLE">SIMPLE</option>
+                <option value="SEMI_EXCLUSIVA">SEMI_EXCLUSIVA</option>
+                <option value="EXCLUSIVA">EXCLUSIVA</option>
+            </select>
+        </div>
+        <div class="form-group-row">
+            <div class="form-group half">
+                <label>Fecha inicio</label>
+                <input type="date" name="fechaInicio" required>
+            </div>
+            <div class="form-group half">
+                <label>Fecha fin</label>
+                <input type="date" name="fechaFin">
+            </div>
+        </div>
+        <button type="submit">Asignar materia</button>
+    </form>
+
+    <div class="materia-current">
+        <h2>Materias actuales</h2>
+        <ul>
+            {{#materiasAsignadas}}
+            <li>
+                {{nombreMateria}} (Año {{anio}} - Cuatr. {{cuatrimestre}})
+                <form action="/admin/docentes/desasignar" method="POST" style="display:inline-block;margin-left:12px;">
+                    <input type="hidden" name="dni" value="{{dni}}">
+                    <input type="hidden" name="id_materia" value="{{id}}">
+                    <button type="submit" style="background:#fd7e14;color:white;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;">➖ Desasignar</button>
+                </form>
+            </li>
+            {{/materiasAsignadas}}
+            {{^materiasAsignadas}}
+            <li>Sin materias asignadas</li>
+            {{/materiasAsignadas}}
+        </ul>
+    </div>
+</div>
+</body>
+</html>

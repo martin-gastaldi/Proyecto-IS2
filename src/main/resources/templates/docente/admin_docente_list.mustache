@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestionar Docentes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            background: white;
+            max-width: 1100px;
+            margin: 0 auto;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.18);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+
+        .top-actions p {
+            color: #555;
+            margin: 6px 0 0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .button.primary {
+            background: #667eea;
+        }
+
+        .button.secondary {
+            background: #6c757d;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+        }
+
+        .message {
+            padding: 14px 18px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        .card {
+            border: 1px solid #e3e8f0;
+            border-radius: 14px;
+            padding: 22px;
+            display: grid;
+            grid-template-columns: 1fr 260px;
+            gap: 18px;
+            align-items: start;
+            background: #fbfcff;
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 1.3rem;
+            color: #2b2b2b;
+        }
+        
+        .card p {
+            margin: 8px 0;
+            color: #4a4a4a;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .actions form {
+            margin: 0;
+            width: 100%;
+        }
+
+        .actions button,
+        .actions a {
+            width: 100%;
+            min-height: 44px;
+            padding: 12px 14px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+
+        .actions .view {
+            background: #667eea;
+        }
+
+        .actions .edit {
+            background: #f6c23e;
+            color: #111;
+        }
+        
+        .actions .delete {
+            background: #e74a3b;
+        }
+        
+        .actions .assign {
+            background: #1cc88a;
+        }
+        
+        .actions .unassign {
+            background: #fd7e14;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top-actions">
+        <div>
+            <h1>Gestionar Docentes</h1>
+            <p>Desde aquí puedes ver datos, editar, eliminar y asignar materias a cada docente.</p>
+        </div>
+        <div>
+            <a href="/admin/panel" class="button secondary">← Volver</a>
+            <a href="/get_docente" class="button primary">➕ Nuevo Docente</a>
+        </div>
+    </div>
+
+    {{#successMessage}}
+    <div class="message success">{{successMessage}}</div>
+    {{/successMessage}}
+
+    {{#errorMessage}}
+    <div class="message error">{{errorMessage}}</div>
+    {{/errorMessage}}
+
+    <div class="grid">
+        {{#docentes}}
+        <div class="card">
+            <div>
+                <h2>{{realName}} {{surname}}</h2>
+                <p><strong>DNI:</strong> {{dni}}</p>
+                <p><strong>Correo:</strong> {{correo}}</p>
+            </div>
+            <div class="actions">
+                <a href="/admin/docentes/view/{{dni}}" class="view">👁 Ver</a>
+                <a href="/admin/docentes/edit/{{dni}}" class="edit">✏️ Editar</a>
+                <form action="/admin/docentes/delete" method="POST" onsubmit="return confirm('¿Eliminar docente {{realName}} {{surname}}?');">
+                    <input type="hidden" name="dni" value="{{dni}}">
+                    <button type="submit" class="delete">🗑 Eliminar</button>
+                </form>
+                <a href="/admin/docentes/asignar/{{dni}}" class="assign">📚 Materias</a>
+            </div>
+        </div>
+        {{/docentes}}
+    </div>
+</div>
+</body>
+</html>
