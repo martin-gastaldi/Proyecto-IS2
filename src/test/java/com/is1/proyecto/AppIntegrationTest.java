@@ -149,6 +149,53 @@ public class AppIntegrationTest {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
+    private void crearDocenteBase() {
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+
+            Base.exec(
+                "INSERT INTO carrera " +
+                "(id_carrera, nombreCarrera, facultad, duracion, titulo) " +
+                "VALUES " +
+                "(1, 'Ingenieria', 'FCEFyN', 5, 'Ingeniero')"
+            );
+
+            Base.exec(
+                "INSERT INTO persona " +
+                "(dni, realName, surname, telefono, correo) " +
+                "VALUES " +
+                "(123, 'Juan', 'Perez', '358', 'juan@test.com')"
+            );
+
+            Base.exec(
+                "INSERT INTO docente " +
+                "(dni, departament, cuil) " +
+                "VALUES " +
+                "(123, 'CS', '20-123')"
+            );
+
+            Base.exec(
+                "INSERT INTO materia " +
+                "(id_materia, nombreMateria, anio, cuatrimestre, carga_horaria, id_carrera) " +
+                "VALUES " +
+                "(1, 'IS1', 1, 1, 64, 1)"
+            );
+
+            Base.exec(
+                "INSERT INTO dictado " +
+                "(dniDocente, id_materia, cargo, dedicacion, fechaInicio) " +
+                "VALUES " +
+                "(123, 1, 'TITULAR', 'SIMPLE', '2024-01-01')"
+            );
+
+        } finally {
+
+            Base.close();
+        }
+    }
+
     // =========================================================
     // USERS
     // =========================================================
@@ -162,10 +209,6 @@ public class AppIntegrationTest {
         );
 
         assertEquals(302, res.statusCode());
-
-        String location = res.headers()
-            .firstValue("Location")
-            .orElse("");
 
         assertEquals(302, res.statusCode());
 
@@ -311,38 +354,6 @@ public class AppIntegrationTest {
             location.contains("Todos los campos son obligatorios.")
         );
     }
-    /* 
-    @Test
-    void testPostDocente_containsData() throws Exception {
-
-        Base.open(DB_DRIVER, DB_URL, "", "");
-
-        try {
-
-            Base.exec("INSERT INTO carrera (id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES (1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas') ");
-
-        } finally {
-
-            Base.close();
-        }
-
-        post(
-            "/get_docente",
-            "dni=123&realName=Juan&surname=Perez&nombreMateria=IS1&id_carrera=1&departament=CS&correo=test@test.com&telefono=358000000"
-        );
-
-        HttpResponse<String> res = get("/post_docente");
-
-        assertEquals(200, res.statusCode());
-
-        String body = res.body();
-
-        assertTrue(body.contains("Juan"));
-        assertTrue(body.contains("Perez"));
-        assertTrue(body.contains("IS1"));
-        assertTrue(body.contains("test@test.com"));
-    }
-    */
 
     @Test
     void testCreateDocente_duplicateDni() throws Exception {
@@ -380,6 +391,377 @@ public class AppIntegrationTest {
 
             Base.close();
         }
+    }
+
+    @Test
+    void testManageDocentes_OK() throws Exception {
+
+        crearDocenteBase();
+
+        HttpResponse<String> res =
+            get("/admin/docentes");
+
+        assertEquals(200, res.statusCode());
+
+        String body = res.body();
+
+        assertTrue(body.contains("Juan"));
+        assertTrue(body.contains("Perez"));
+    }
+
+    @Test
+    void testManageDocentes_empty() throws Exception {
+
+        HttpResponse<String> res =
+            get("/admin/docentes");
+
+        assertEquals(200, res.statusCode());
+    }
+
+    @Test
+    void testViewDocente_OK() throws Exception {
+
+        crearDocenteBase();
+
+        HttpResponse<String> res =
+            get("/admin/docentes/view/123");
+
+        assertEquals(200, res.statusCode());
+
+        String body = res.body();
+
+        assertTrue(body.contains("Juan"));
+        assertTrue(body.contains("Perez"));
+    }
+
+    @Test
+    void testEditDocenteView_OK() throws Exception {
+
+        crearDocenteBase();
+
+        HttpResponse<String> res =
+            get("/admin/docentes/edit/123");
+
+        assertEquals(200, res.statusCode());
+
+        assertTrue(res.body().contains("Juan"));
+    }
+
+    @Test
+    void testAsignarMateriaView_OK() throws Exception {
+
+        crearDocenteBase();
+
+        HttpResponse<String> res =
+            get("/admin/docentes/asignar/123");
+
+        assertEquals(200, res.statusCode());
+
+        assertTrue(res.body().contains("IS1"));
+    }
+
+    @Test
+    void testEditDocente_OK() throws Exception {
+
+        crearDocenteBase();
+
+        HttpResponse<String> res = post(
+            "/admin/docentes/edit",
+            "dni=123" +
+            "&realName=Carlos" +
+            "&surname=Lopez" +
+            "&correo=carlos@test.com" +
+            "&telefono=111" +
+            "&departament=Matematica" +
+            "&cuil=20-999"
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+
+            Persona persona =
+                Persona.findFirst("dni = ?", 123);
+
+            Docente docente =
+                Docente.findFirst("dni = ?", 123);
+
+            assertEquals(
+                "Carlos",
+                persona.getString("realName")
+            );
+
+            assertEquals(
+                "Matematica",
+                docente.getString("departament")
+            );
+
+        } finally {
+
+            Base.close();
+        }
+    }
+
+    @Test
+    void testEditDocente_validationError() throws Exception {
+
+        HttpResponse<String> res = post(
+            "/admin/docentes/edit",
+            "dni=&realName="
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location =
+            res.headers()
+                .firstValue("Location")
+                .orElse("");
+
+        assertTrue(location.contains("error"));
+    }
+
+    @Test
+    void testDeleteDocente_OK() throws Exception {
+
+        crearDocenteBase();
+
+        HttpResponse<String> res = post(
+            "/admin/docentes/delete",
+            "dni=123"
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+
+            Docente docente =
+                Docente.findFirst("dni = ?", 123);
+
+            assertEquals(null, docente);
+
+        } finally {
+
+            Base.close();
+        }
+    }
+
+    @Test
+    void testDeleteDocente_missingDni() throws Exception {
+
+        HttpResponse<String> res = post(
+            "/admin/docentes/delete",
+            ""
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location =
+            res.headers()
+                .firstValue("Location")
+                .orElse("");
+
+        assertTrue(location.contains("error"));
+    }
+
+    @Test
+    void testAsignarMateria_OK() throws Exception {
+
+        crearDocenteBase();
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+
+            Base.exec(
+                "INSERT INTO materia " +
+                "(id_materia, nombreMateria, anio, cuatrimestre, carga_horaria) " +
+                "VALUES " +
+                "(2, 'BD', 2, 1, 64)"
+            );
+
+        } finally {
+
+            Base.close();
+        }
+
+        HttpResponse<String> res = post(
+            "/admin/docentes/asignar",
+            "dni=123" +
+            "&id_materia=2" +
+            "&cargo=AYUDANTE" +
+            "&dedicacion=SIMPLE" +
+            "&fechaInicio=2025-01-01"
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+
+            Dictado d =
+                Dictado.findFirst(
+                    "dniDocente = ? AND id_materia = ?",
+                    123,
+                    2
+                );
+
+            assertNotNull(d);
+
+        } finally {
+
+            Base.close();
+        }
+    }
+
+    @Test
+    void testAsignarMateria_invalidData() throws Exception {
+
+        HttpResponse<String> res = post(
+            "/admin/docentes/asignar",
+            "dni=a"
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location =
+            res.headers()
+                .firstValue("Location")
+                .orElse("");
+
+        assertTrue(location.contains("error"));
+    }
+
+    @Test
+    void testDesasignarMateria_OK() throws Exception {
+
+        crearDocenteBase();
+
+        HttpResponse<String> res = post(
+            "/admin/docentes/desasignar",
+            "dni=123&id_materia=1"
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+
+            Dictado d =
+                Dictado.findFirst(
+                    "dniDocente = ? AND id_materia = ?",
+                    123,
+                    1
+                );
+
+            assertEquals(null, d);
+
+        } finally {
+
+            Base.close();
+        }
+    }
+
+    @Test
+    void testDesasignarMateria_missingData() throws Exception {
+
+        HttpResponse<String> res = post(
+            "/admin/docentes/desasignar",
+            ""
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location =
+            res.headers()
+                .firstValue("Location")
+                .orElse("");
+
+        assertTrue(location.contains("error"));
+    }
+
+    @Test
+    void testDocenteMaterias_OK() throws Exception {
+
+        crearDocenteBase();
+
+        post(
+            "/user/new",
+            "name=docente2&password=1234&dni=123&realName=Juan&surname=Perez&correo=juan@test.com"
+        );
+
+        HttpResponse<String> loginRes = post(
+            "/login",
+            "username=docente2&password=1234"
+        );
+
+        String cookie = loginRes.headers()
+            .firstValue("Set-Cookie")
+            .orElse("");
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080/docente/materias"))
+            .header("Cookie", cookie)
+            .GET()
+            .build();
+
+        HttpResponse<String> res =
+            client.send(
+                request,
+                HttpResponse.BodyHandlers.ofString()
+            );
+
+        assertEquals(200, res.statusCode());
+
+        assertTrue(res.body().contains("IS1"));
+    }
+
+    @Test
+    void testAlumnosMateria_OK() throws Exception {
+
+        crearDocenteBase();
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+
+            Base.exec(
+                "INSERT INTO persona " +
+                "(dni, realName, surname, telefono, correo) " +
+                "VALUES " +
+                "(500, 'Ana', 'Gomez', '123', 'ana@test.com')"
+            );
+
+            Base.exec(
+                "INSERT INTO estudiante " +
+                "(dni, legajo, fecha_ingreso) " +
+                "VALUES " +
+                "(500, 1000, '2024-01-01')"
+            );
+
+            Base.exec(
+                "INSERT INTO cursado " +
+                "(dniEstudiante, id_materia, fechaInscripcion, estado, notaFinal) " +
+                "VALUES " +
+                "(500, 1, '2024-01-01', 'REGULAR', 8)"
+            );
+
+        } finally {
+
+            Base.close();
+        }
+
+        HttpResponse<String> res =
+            get("/docente/alumnos/1");
+
+        assertEquals(200, res.statusCode());
+
+        assertTrue(res.body().contains("Ana"));
     }
 
     // =========================================================

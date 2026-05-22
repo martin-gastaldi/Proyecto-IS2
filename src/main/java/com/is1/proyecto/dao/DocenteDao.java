@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.javalite.activejdbc.Base;
 import org.mindrot.jbcrypt.BCrypt;
 
 import com.is1.proyecto.models.Cursado;
@@ -30,8 +31,6 @@ public class DocenteDao {
     String telefono = req.queryParams("telefono");
     String username = req.queryParams("username");
     String password = req.queryParams("password");
-    String anioStr = req.queryParams("anio");
-    String cuatrimestreStr = req.queryParams("cuatrimestre");
 
     if (
         dniStr == null || dniStr.isBlank() ||
@@ -48,42 +47,50 @@ public class DocenteDao {
 
     Integer dni = Integer.valueOf(dniStr);
 
-    Persona persona = Persona.findFirst(
+    boolean personaExists = Base.count(
+            "persona",
             "dni = ?",
             dni
-    );
+    ) > 0;
 
-    if (persona == null) {
-
-        persona = new Persona();
-
-        persona.set("dni", dni);
-
-        persona.set("realName", realName);
-
-        persona.set("surname", surname);
-
-        persona.set("telefono", telefono);
-
-        persona.set("correo", correo);
-
-        persona.saveIt();
+    if (personaExists) {
+        Base.exec(
+            "UPDATE persona SET realName = ?, surname = ?, telefono = ?, correo = ? WHERE dni = ?",
+            realName,
+            surname,
+            telefono,
+            correo,
+            dni
+        );
+    } else {
+        Base.exec(
+            "INSERT INTO persona (dni, realName, surname, telefono, correo) VALUES (?, ?, ?, ?, ?)",
+            dni,
+            realName,
+            surname,
+            telefono,
+            correo
+        );
     }
 
-    Docente docente = Docente.findFirst(
+    boolean docenteExists = Base.count(
+            "docente",
             "dni = ?",
             dni
-    );
+    ) > 0;
 
-    if (docente == null) {
-
-        docente = new Docente();
-
-        docente.set("dni", dni);
-
-        docente.set("departament", departament);
-
-        docente.saveIt();
+    if (docenteExists) {
+        Base.exec(
+            "UPDATE docente SET departament = ? WHERE dni = ?",
+            departament,
+            dni
+        );
+    } else {
+        Base.exec(
+            "INSERT INTO docente (dni, departament) VALUES (?, ?)",
+            dni,
+            departament
+        );
     }
 
     Materia materia = Materia.findFirst(
@@ -157,17 +164,17 @@ public class DocenteDao {
         password != null && !password.isBlank()
     ) {
 
-    User user = User.findFirst(
-            "dni = ?",
-            dni
-    );
+        User user = User.findFirst(
+                "dni = ?",
+                dni
+        );
 
-    if (user == null) {
-
-        user = new User();
+        if (user == null) {
+            user = new User();
+            user.set("dni", dni);
+        }
 
         user.set("name", username);
-
         user.set(
             "password",
             BCrypt.hashpw(
@@ -176,10 +183,7 @@ public class DocenteDao {
             )
         );
 
-        user.set("dni", dni);
-
         user.saveIt();
-    }   
     }
 
     }
@@ -245,6 +249,11 @@ public class DocenteDao {
             if (materia != null) {
 
                 data.put(
+                        "idMateria",
+                        materia.getInteger("id_materia")
+                );
+
+                data.put(
                         "nombreMateria",
                         materia.getString("nombreMateria")
                 );
@@ -277,20 +286,39 @@ public class DocenteDao {
                 "dni = ?", dni
         );
 
-        data.put(
-            "nombre",
-            persona.getString("realName")
-        );
+        if (persona != null) {
+            data.put(
+                "nombre",
+                persona.getString("realName")
+            );
 
-        data.put(
-            "apellido",
-            persona.getString("surname")
-        );
+            data.put(
+                "apellido",
+                persona.getString("surname")
+            );
 
-        data.put(
-            "departamento",
-            docente.getString("departament")
-        );
+            data.put(
+                "correo",
+                persona.getString("correo")
+            );
+
+            data.put(
+                "telefono",
+                persona.getString("telefono")
+            );
+        }
+
+        if (docente != null) {
+            data.put(
+                "departamento",
+                docente.getString("departament")
+            );
+
+            data.put(
+                "cuil",
+                docente.getString("cuil")
+            );
+        }
 
         return data;
     }
@@ -320,6 +348,36 @@ public class DocenteDao {
                 data.put(
                     "id",
                     m.getInteger("id_materia")
+                );
+
+                data.put(
+                    "id_materia",
+                    m.getInteger("id_materia")
+                );
+
+                data.put(
+                    "dni",
+                    dni
+                );
+
+                data.put(
+                    "cargo",
+                    d.getString("cargo")
+                );
+
+                data.put(
+                    "dedicacion",
+                    d.getString("dedicacion")
+                );
+
+                data.put(
+                    "fechaInicio",
+                    d.getString("fechaInicio")
+                );
+
+                data.put(
+                    "fechaFin",
+                    d.getString("fechaFin")
                 );
 
                 data.put(
@@ -396,5 +454,169 @@ public class DocenteDao {
         }
 
         return alumnos;
+    }
+
+    public void eliminarDocente(Integer dni) {
+
+        Base.exec(
+            "DELETE FROM dictado WHERE dniDocente = ?",
+            dni
+        );
+
+        Base.exec(
+            "DELETE FROM docente WHERE dni = ?",
+            dni
+        );
+
+        Base.exec(
+            "DELETE FROM users WHERE dni = ?",
+            dni
+        );
+    }
+
+    public void editarDocente(Request req) {
+
+        String dniStr = req.queryParams("dni");
+
+        if (dniStr == null || dniStr.isBlank()) {
+            throw new IllegalArgumentException("DNI requerido");
+        }
+
+        Integer dni = Integer.valueOf(dniStr);
+
+        String realName = req.queryParams("realName");
+        String surname = req.queryParams("surname");
+        String correo = req.queryParams("correo");
+        String telefono = req.queryParams("telefono");
+        String departament = req.queryParams("departament");
+        String cuil = req.queryParams("cuil");
+
+        if (
+                realName == null || realName.isBlank() ||
+                surname == null || surname.isBlank() ||
+                correo == null || correo.isBlank() ||
+                telefono == null || telefono.isBlank() ||
+                departament == null || departament.isBlank() ||
+                cuil == null || cuil.isBlank()
+        ) {
+            throw new IllegalArgumentException("Todos los campos son obligatorios.");
+        }
+
+        boolean personaExists = Base.count(
+                "persona",
+                "dni = ?",
+                dni
+        ) > 0;
+
+        if (personaExists) {
+            Base.exec(
+                "UPDATE persona SET realName = ?, surname = ?, correo = ?, telefono = ? WHERE dni = ?",
+                realName,
+                surname,
+                correo,
+                telefono,
+                dni
+            );
+        } else {
+            Base.exec(
+                "INSERT INTO persona (dni, realName, surname, correo, telefono) VALUES (?, ?, ?, ?, ?)",
+                dni,
+                realName,
+                surname,
+                correo,
+                telefono
+            );
+        }
+
+        boolean docenteExists = Base.count(
+                "docente",
+                "dni = ?",
+                dni
+        ) > 0;
+
+        if (docenteExists) {
+            Base.exec(
+                "UPDATE docente SET departament = ?, cuil = ? WHERE dni = ?",
+                req.queryParams("departament"),
+                cuil,
+                dni
+            );
+        } else {
+            Base.exec(
+                "INSERT INTO docente (dni, departament, cuil) VALUES (?, ?, ?)",
+                dni,
+                req.queryParams("departament"),
+                cuil
+            );
+        }
+    }
+
+    public void asignarMateria(Integer dni,
+                                Integer idMateria,
+                                String cargo,
+                                String dedicacion,
+                                String fechaInicio,
+                                String fechaFin) {
+
+        Dictado dictado = Dictado.findFirst(
+                "dniDocente = ? AND id_materia = ?",
+                dni,
+                idMateria
+        );
+
+        if (dictado == null) {
+            dictado = new Dictado();
+            dictado.set("dniDocente", dni);
+            dictado.set("id_materia", idMateria);
+        }
+
+        dictado.set("cargo", cargo != null && !cargo.isBlank() ? cargo : "TITULAR");
+        dictado.set("dedicacion", dedicacion != null && !dedicacion.isBlank() ? dedicacion : "SIMPLE");
+        dictado.set("fechaInicio", fechaInicio != null && !fechaInicio.isBlank() ? fechaInicio : "2024-01-01");
+
+        if (fechaFin != null && !fechaFin.isBlank()) {
+            dictado.set("fechaFin", fechaFin);
+        } else {
+            dictado.set("fechaFin", null);
+        }
+
+        dictado.saveIt();
+    }
+
+    public void desasignarMateria(Integer dni, Integer idMateria) {
+
+        Dictado dictado = Dictado.findFirst(
+                "dniDocente = ? AND id_materia = ?",
+                dni,
+                idMateria
+        );
+
+        if (dictado != null) {
+            Base.exec(
+                "DELETE FROM dictado WHERE dniDocente = ? AND id_materia = ?",
+                dni,
+                idMateria
+            );
+        }
+    }
+
+    public List<Map<String, Object>> obtenerTodasMaterias() {
+
+        List<Map<String, Object>> materiasList = new ArrayList<>();
+
+        List<Materia> materias = Materia.findAll();
+
+        for (Materia m : materias) {
+            Map<String, Object> data = new HashMap<>();
+
+            data.put("id_materia", m.getInteger("id_materia"));
+            data.put("nombreMateria", m.getString("nombreMateria"));
+            data.put("anio", m.getInteger("anio"));
+            data.put("cuatrimestre", m.getInteger("cuatrimestre"));
+
+            materiasList.add(data);
+        }
+
+        return materiasList;
     }
 }
