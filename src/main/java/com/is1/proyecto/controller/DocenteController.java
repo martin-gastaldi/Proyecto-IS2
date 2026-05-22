@@ -15,6 +15,158 @@ public class DocenteController {
     private static DocenteDao docenteDao =
             new DocenteDao();
 
+    public static ModelAndView manageDocentes(Request req, Response res) {
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("docentes", docenteDao.obtenerDocentes());
+        model.put("successMessage", req.queryParams("message"));
+        model.put("errorMessage", req.queryParams("error"));
+
+        return new ModelAndView(
+            model,
+            "docente/admin_docente_list.mustache"
+        );
+    }
+
+    public static ModelAndView deleteDocente(Request req, Response res) {
+
+        try {
+            String dniStr = req.queryParams("dni");
+
+            if (dniStr == null || dniStr.isBlank()) {
+                throw new IllegalArgumentException("DNI requerido");
+            }
+
+            Integer dni = Integer.valueOf(dniStr);
+
+            docenteDao.eliminarDocente(dni);
+
+            res.redirect("/admin/docentes?message=Docente eliminado");
+
+        } catch (Exception e) {
+            res.redirect("/admin/docentes?error=" + e.getMessage());
+        }
+
+        return null;
+    }
+
+    public static ModelAndView viewDocente(Request req, Response res) {
+
+        Integer dni = Integer.valueOf(req.params(":dni"));
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("dni", dni);
+        model.put("docente", docenteDao.obtenerDatosDocente(dni));
+        model.put("materias", docenteDao.obtenerMateriasDocente(dni));
+
+        return new ModelAndView(
+            model,
+            "docente/admin_view_docente.mustache"
+        );
+    }
+
+    public static ModelAndView editDocenteView(Request req, Response res) {
+
+        Integer dni = Integer.valueOf(req.params(":dni"));
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("dni", dni);
+        model.put("docente", docenteDao.obtenerDatosDocente(dni));
+
+        return new ModelAndView(
+            model,
+            "docente/admin_edit_docente.mustache"
+        );
+    }
+
+    public static ModelAndView asignarMateriaView(Request req, Response res) {
+
+        Integer dni = Integer.valueOf(req.params(":dni"));
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("dni", dni);
+        model.put("docente", docenteDao.obtenerDatosDocente(dni));
+        model.put("materias", docenteDao.obtenerTodasMaterias());
+        model.put("materiasAsignadas", docenteDao.obtenerMateriasDocente(dni));
+
+        return new ModelAndView(
+            model,
+            "docente/admin_asignar_materia.mustache"
+        );
+    }
+
+    public static ModelAndView editDocente(Request req, Response res) {
+
+        try {
+            docenteDao.editarDocente(req);
+
+            res.redirect("/admin/docentes?message=Docente actualizado");
+
+        } catch (Exception e) {
+            res.redirect("/admin/docentes?error=" + e.getMessage());
+        }
+
+        return null;
+    }
+
+    public static ModelAndView asignarMateria(Request req, Response res) {
+
+        try {
+            Integer dni = Integer.valueOf(req.queryParams("dni"));
+            Integer idMateria = Integer.valueOf(req.queryParams("id_materia"));
+            String cargo = req.queryParams("cargo");
+            String dedicacion = req.queryParams("dedicacion");
+            String fechaInicio = req.queryParams("fechaInicio");
+            String fechaFin = req.queryParams("fechaFin");
+
+            docenteDao.asignarMateria(
+                dni,
+                idMateria,
+                cargo,
+                dedicacion,
+                fechaInicio,
+                fechaFin
+            );
+
+            res.redirect("/admin/docentes?message=Materia asignada");
+
+        } catch (Exception e) {
+            res.redirect("/admin/docentes?error=" + e.getMessage());
+        }
+
+        return null;
+    }
+
+    public static ModelAndView desasignarMateria(Request req, Response res) {
+
+        try {
+            String dniStr = req.queryParams("dni");
+            String idMateriaStr = req.queryParams("id_materia");
+
+            if (dniStr == null || dniStr.isBlank() ||
+                idMateriaStr == null || idMateriaStr.isBlank()) {
+                res.redirect("/admin/docentes?error=Faltan datos para desasignar materia");
+                return null;
+            }
+
+            Integer dni = Integer.valueOf(dniStr);
+            Integer idMateria = Integer.valueOf(idMateriaStr);
+
+            docenteDao.desasignarMateria(dni, idMateria);
+
+            res.redirect("/admin/docentes?message=Materia desasignada");
+
+        } catch (Exception e) {
+            res.redirect("/admin/docentes?error=" + e.getMessage());
+        }
+
+        return null;
+    }
+
     public static ModelAndView dashboard(Request req,
                                          Response res) {
 
@@ -99,7 +251,7 @@ public class DocenteController {
             docenteDao.crearDocente(req);
 
             res.redirect(
-                "/post_docente?message=Docente cargado exitosamente"
+                "/admin/docentes?message=Docente cargado exitosamente"
             );
 
         } catch (Exception e) {
@@ -111,21 +263,5 @@ public class DocenteController {
         }
 
         return null;
-    }
-
-    public static ModelAndView listDocentes(Request req,
-                                            Response res) {
-
-        Map<String, Object> model = new HashMap<>();
-
-        model.put(
-            "docentes",
-            docenteDao.obtenerDocentes()
-        );
-
-        return new ModelAndView(
-            model,
-            "docente/post_docente.mustache"
-        );
     }
 }

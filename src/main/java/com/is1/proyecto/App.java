@@ -85,8 +85,37 @@ public class App {
             DocenteController::createDocente,
             engine);
 
-        get("/post_docente",
-            DocenteController::listDocentes,
+        // ADMIN - GESTIONAR DOCENTES
+        get("/admin/docentes",
+            DocenteController::manageDocentes,
+            engine);
+
+        get("/admin/docentes/view/:dni",
+            DocenteController::viewDocente,
+            engine);
+
+        get("/admin/docentes/edit/:dni",
+            DocenteController::editDocenteView,
+            engine);
+
+        get("/admin/docentes/asignar/:dni",
+            DocenteController::asignarMateriaView,
+            engine);
+
+        post("/admin/docentes/delete",
+            DocenteController::deleteDocente,
+            engine);
+
+        post("/admin/docentes/edit",
+            DocenteController::editDocente,
+            engine);
+
+        post("/admin/docentes/asignar",
+            DocenteController::asignarMateria,
+            engine);
+
+        post("/admin/docentes/desasignar",
+            DocenteController::desasignarMateria,
             engine);
 
         get("/docente/dashboard",
