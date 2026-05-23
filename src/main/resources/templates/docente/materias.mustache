@@ -2,99 +2,169 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Materias del Docente</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Materias</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #0e4e0e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1cae41 0%, #3a8e48 100%);
+            min-height: 100vh;
             padding: 30px;
         }
 
         .container {
-            max-width: 1000px;
-            margin: auto;
+            width: 100%;
+            max-width: 900px;
             background: white;
-            padding: 30px;
             border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            margin: 0 auto;
         }
 
-        h1 {
-            margin-bottom: 30px;
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+
+        .top-actions h1 {
+            margin-bottom: 8px;
+            font-size: 2rem;
             color: #333;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .top-actions p {
+            color: #555;
+            margin: 0;
         }
 
-        th, td {
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
-
-        th {
-            background: #667eea;
-            color: white;
-        }
-
-        tr:hover {
-            background: #f5f7ff;
-        }
-
-        .btn {
-            padding: 8px 14px;
-            background: #2e9c34;
-            color: white;
-            border-radius: 5px;
+        .button {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 8px;
             text-decoration: none;
+            color: white;
+            font-weight: 600;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
-    </style>
+        .button.secondary {
+            background: #6c757d;
+        }
 
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+        }
+
+        .grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        .card {
+            border: 1px solid #d3e5d3;
+            border-radius: 14px;
+            padding: 22px;
+            background: #f6fbf6;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .card-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card h2 {
+            margin: 0 0 12px;
+            font-size: 1.3rem;
+            color: #1cae41;
+        }
+
+        .card p {
+            margin: 8px 0;
+            color: #4a4a4a;
+            font-size: 0.95rem;
+        }
+
+        .card strong {
+            color: #2d7b28;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .actions a {
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .actions .view {
+            background: linear-gradient(135deg, #1cae41 0%, #0d7a2e 100%);
+        }
+
+        .actions .view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(28, 174, 65, 0.3);
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
 
-    <h1>📚 Materias asignadas</h1>
+    <div class="top-actions">
+        <div>
+            <h1>📚 Mis materias</h1>
+            <p>Consulta tus materias y accede a los alumnos de cada una.</p>
+        </div>
+        <a href="/docente/dashboard" class="button secondary">← Volver</a>
+    </div>
 
-    <table>
-
-        <thead>
-            <tr>
-                <th>Materia</th>
-                <th>Año</th>
-                <th>Cuatrimestre</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
+    <div class="grid">
         {{#materias}}
-
-            <tr>
-                <td>{{nombreMateria}}</td>
-                <td>{{anio}}</td>
-                <td>{{cuatrimestre}}</td>
-                <td>
-                    <a class="btn" href="/docente/alumnos/{{id}}">
-                        Ver alumnos
-                    </a>
-                </td>
-            </tr>
-
+        <div class="card">
+            <div class="card-info">
+                <h2>{{nombreMateria}}</h2>
+                <p><strong>Año:</strong> {{anio}}</p>
+                <p><strong>Cuatrimestre:</strong> {{cuatrimestre}}</p>
+                <p><strong>Cargo:</strong> {{cargo}}</p>
+                <p><strong>Dedicación:</strong> {{dedicacion}}</p>
+                <p><strong>Fecha Inicio:</strong> {{fechaInicio}}</p>
+                {{#fechaFin}}<p><strong>Fecha Fin:</strong> {{fechaFin}}</p>{{/fechaFin}}
+            </div>
+            <div class="actions">
+                <a href="/docente/alumnos/{{id}}" class="view">👥 Ver Alumnos</a>
+            </div>
+        </div>
         {{/materias}}
-
-        </tbody>
-
-    </table>
+    </div>
 
 </div>
 
 </body>
 </html>
+
