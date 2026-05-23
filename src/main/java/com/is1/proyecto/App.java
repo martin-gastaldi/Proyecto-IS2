@@ -122,6 +122,18 @@ public class App {
             DocenteController::dashboard,
             engine);
 
+        get("/docente/perfil",
+            DocenteController::profile,
+            engine);
+
+        get("/docente/perfil/editar",
+            DocenteController::editProfileView,
+            engine);
+
+        post("/docente/perfil/editar",
+            DocenteController::updateProfile,
+            engine);
+
         get("/docente/materias",
             DocenteController::materias,
             engine);
