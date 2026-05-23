@@ -196,6 +196,30 @@ public class AppIntegrationTest {
         }
     }
 
+    private String loginDocente() throws Exception {
+
+        crearDocenteBase();
+
+        post(
+            "/user/new",
+            "name=docenteTest" +
+            "&password=1234" +
+            "&dni=123" +
+            "&realName=Juan" +
+            "&surname=Perez" +
+            "&correo=juan@test.com"
+        );
+
+        HttpResponse<String> loginRes = post(
+            "/login",
+            "username=docenteTest&password=1234"
+        );
+
+        return loginRes.headers()
+            .firstValue("Set-Cookie")
+            .orElse("");
+    }
+
     // =========================================================
     // USERS
     // =========================================================
@@ -762,6 +786,225 @@ public class AppIntegrationTest {
         assertEquals(200, res.statusCode());
 
         assertTrue(res.body().contains("Ana"));
+    }
+
+    @Test
+    void testProfile_OK() throws Exception {
+
+        String cookie = loginDocente();
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080/docente/perfil"))
+            .header("Cookie", cookie)
+            .GET()
+            .build();
+
+        HttpResponse<String> res = client.send(
+            request,
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertEquals(200, res.statusCode());
+
+        String body = res.body();
+
+        assertTrue(body.contains("Juan"));
+        assertTrue(body.contains("Perez"));
+        assertTrue(body.contains("20-123"));
+    }
+
+    @Test
+    void testEditProfileView_OK() throws Exception {
+
+        String cookie = loginDocente();
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080/docente/perfil/editar"))
+            .header("Cookie", cookie)
+            .GET()
+            .build();
+
+        HttpResponse<String> res = client.send(
+            request,
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertEquals(200, res.statusCode());
+
+        assertTrue(res.body().contains("Editar mis datos"));
+        assertTrue(res.body().contains("Juan"));
+    }
+
+    @Test
+    void testUpdateProfile_OK() throws Exception {
+
+        String cookie = loginDocente();
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080/docente/perfil/editar"))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .header("Cookie", cookie)
+            .POST(HttpRequest.BodyPublishers.ofString(
+                "dni=123" +
+                "&realName=Carlos" +
+                "&surname=Lopez" +
+                "&correo=carlos@test.com" +
+                "&telefono=999" +
+                "&departament=Matematica" +
+                "&cuil=20-999"
+            ))
+            .build();
+
+        HttpResponse<String> res = client.send(
+            request,
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+
+            Persona persona =
+                Persona.findFirst("dni = ?", 123);
+
+            Docente docente =
+                Docente.findFirst("dni = ?", 123);
+
+            assertEquals(
+                "Carlos",
+                persona.getString("realName")
+            );
+
+            assertEquals(
+                "Matematica",
+                docente.getString("departament")
+            );
+
+        } finally {
+
+            Base.close();
+        }
+    }
+
+    @Test
+    void testUpdateProfile_changePassword_OK() throws Exception {
+
+        String cookie = loginDocente();
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080/docente/perfil/editar"))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .header("Cookie", cookie)
+            .POST(HttpRequest.BodyPublishers.ofString(
+                "dni=123" +
+                "&realName=Juan" +
+                "&surname=Perez" +
+                "&correo=juan@test.com" +
+                "&telefono=358" +
+                "&departament=CS" +
+                "&cuil=20-123" +
+                "&password=nueva123" +
+                "&password_confirm=nueva123"
+            ))
+            .build();
+
+        HttpResponse<String> res = client.send(
+            request,
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+
+            User user =
+                User.findFirst("dni = ?", 123);
+
+            assertNotNull(user);
+
+            String hashed =
+                user.getString("password");
+
+            assertNotEquals("nueva123", hashed);
+
+            assertTrue(
+                hashed.startsWith("$2")
+            );
+
+        } finally {
+
+            Base.close();
+        }
+    }
+
+    @Test
+    void testUpdateProfile_changePassword_FAIL() throws Exception {
+
+        String cookie = loginDocente();
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080/docente/perfil/editar"))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .header("Cookie", cookie)
+            .POST(HttpRequest.BodyPublishers.ofString(
+                "dni=123" +
+                "&realName=Juan" +
+                "&surname=Perez" +
+                "&correo=juan@test.com" +
+                "&telefono=358" +
+                "&departament=CS" +
+                "&cuil=20-123" +
+                "&password=abc" +
+                "&password_confirm=xyz"
+            ))
+            .build();
+
+        HttpResponse<String> res = client.send(
+            request,
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(
+            location.contains("Las contraseñas no coinciden")
+        );
+    }
+
+    @Test
+    void testUpdateProfile_validationError() throws Exception {
+
+        String cookie = loginDocente();
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080/docente/perfil/editar"))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .header("Cookie", cookie)
+            .POST(HttpRequest.BodyPublishers.ofString(
+                "dni=123&realName="
+            ))
+            .build();
+
+        HttpResponse<String> res = client.send(
+            request,
+            HttpResponse.BodyHandlers.ofString()
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
     }
 
     // =========================================================
