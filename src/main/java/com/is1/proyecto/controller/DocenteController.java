@@ -182,6 +182,7 @@ public class DocenteController {
 
         model.put("docente", docente);
         model.put("materias", materias);
+        model.put("materiasCount", materias.size());
 
         return new ModelAndView(
                 model,
@@ -205,6 +206,55 @@ public class DocenteController {
             model,
             "docente/materias.mustache"
         );
+    }
+
+    public static ModelAndView profile(Request req,
+                                       Response res) {
+
+        Integer dni = req.session().attribute("dni");
+
+        Map<String, Object> model = new HashMap<>();
+        
+        model.put("dni", dni);
+        model.put("docente", docenteDao.obtenerDatosDocente(dni));
+        model.put("successMessage", req.queryParams("message"));
+        model.put("errorMessage", req.queryParams("error"));
+
+        return new ModelAndView(
+            model,
+            "docente/profile.mustache"
+        );
+    }
+
+    public static ModelAndView editProfileView(Request req,
+                                               Response res) {
+
+        Integer dni = req.session().attribute("dni");
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("dni", dni);
+        model.put("docente", docenteDao.obtenerDatosDocente(dni));
+
+        return new ModelAndView(
+            model,
+            "docente/edit_profile.mustache"
+        );
+    }
+
+    public static ModelAndView updateProfile(Request req,
+                                             Response res) {
+
+        try {
+            docenteDao.editarDocente(req);
+
+            res.redirect("/docente/perfil?message=Datos actualizados correctamente");
+
+        } catch (Exception e) {
+            res.redirect("/docente/perfil?error=" + e.getMessage());
+        }
+
+        return null;
     }
 
     public static ModelAndView alumnosMateria(Request req,

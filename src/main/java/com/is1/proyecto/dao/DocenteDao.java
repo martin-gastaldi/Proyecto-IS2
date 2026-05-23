@@ -549,6 +549,39 @@ public class DocenteDao {
                 cuil
             );
         }
+
+        String password = req.queryParams("password");
+        String passwordConfirm = req.queryParams("password_confirm");
+
+        if (password != null && !password.isBlank()) {
+
+            if (!password.equals(passwordConfirm)) {
+                throw new IllegalArgumentException(
+                    "Las contraseñas no coinciden."
+                );
+            }
+
+            User user = User.findFirst(
+                    "dni = ?",
+                    dni
+            );
+
+            if (user == null) {
+                throw new IllegalArgumentException(
+                    "No existe usuario asociado."
+                );
+            }
+
+            user.set(
+                "password",
+                BCrypt.hashpw(
+                    password,
+                    BCrypt.gensalt()
+                )
+            );
+
+            user.saveIt();
+        }
     }
 
     public void asignarMateria(Integer dni,
