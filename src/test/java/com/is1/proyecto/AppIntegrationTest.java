@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.is1.proyecto.models.Administrador;
+import com.is1.proyecto.models.Carrera;
 import com.is1.proyecto.models.Dictado;
 import com.is1.proyecto.models.Docente;
 import com.is1.proyecto.models.Materia;
@@ -218,6 +219,72 @@ public class AppIntegrationTest {
         return loginRes.headers()
             .firstValue("Set-Cookie")
             .orElse("");
+    }
+
+    private String loginAdmin() throws Exception {
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Base.exec(
+                "INSERT INTO persona " +
+                "(dni, realName, surname, telefono, correo) " +
+                "VALUES (123, 'Admin', 'User', '000', 'admin@test.com')"
+            );
+
+            Base.exec(
+                "INSERT INTO administrador (dni) VALUES (123)"
+            );
+        } finally {
+            Base.close();
+        }
+
+        post(
+            "/user/new",
+            "name=adminTest" +
+            "&password=1234" +
+            "&dni=123" +
+            "&realName=Admin" +
+            "&surname=User" +
+            "&correo=admin@test.com"
+        );
+
+        HttpResponse<String> loginRes = post(
+            "/login",
+            "username=adminTest&password=1234"
+        );
+
+        String cookie = loginRes.headers()
+            .firstValue("Set-Cookie")
+            .orElse("");
+
+        return cookie.split(";", 2)[0];
+    }
+
+    private HttpResponse<String> get(String path,
+                                     String cookie) throws Exception {
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080" + path))
+            .header("Cookie", cookie)
+            .GET()
+            .build();
+
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private HttpResponse<String> post(String path,
+                                      String body,
+                                      String cookie) throws Exception {
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080" + path))
+            .header("Cookie", cookie)
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .POST(HttpRequest.BodyPublishers.ofString(body))
+            .build();
+
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     // =========================================================
@@ -440,6 +507,282 @@ public class AppIntegrationTest {
             get("/admin/docentes");
 
         assertEquals(200, res.statusCode());
+    }
+
+    @Test
+    void testManageCarreras_OK() throws Exception {
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Base.exec(
+                "INSERT INTO carrera " +
+                "(id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES " +
+                "(1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas')"
+            );
+        } finally {
+            Base.close();
+        }
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = get("/admin/carreras", cookie);
+
+        assertEquals(200, res.statusCode());
+        assertTrue(res.body().contains("Ingenieria en Sistemas"));
+    }
+
+    @Test
+    void testCreateCarrera_OK() throws Exception {
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/carreras/create",
+            "nombreCarrera=Licenciatura&facultad=FCEFyN&duracion=4&titulo=Licenciado",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Carrera carrera = Carrera.findFirst(
+                "nombreCarrera = ?",
+                "Licenciatura"
+            );
+
+            assertNotNull(carrera);
+            assertEquals("FCEFyN", carrera.getString("facultad"));
+            assertEquals(4, carrera.getInteger("duracion"));
+        } finally {
+            Base.close();
+        }
+    }
+
+    @Test
+    void testDeleteCarrera_OK() throws Exception {
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Base.exec(
+                "INSERT INTO carrera " +
+                "(id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES " +
+                "(1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas')"
+            );
+        } finally {
+            Base.close();
+        }
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/carreras/delete",
+            "id_carrera=1",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Carrera carrera = Carrera.findFirst("id_carrera = ?", 1);
+            assertEquals(null, carrera);
+        } finally {
+            Base.close();
+        }
+    }
+
+    @Test
+    void testCreateCarrera_missingNombre() throws Exception {
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/carreras/create",
+            "nombreCarrera=&facultad=FCEFyN&duracion=4&titulo=Licenciado",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
+        assertTrue(location.contains("Nombre"));
+    }
+
+    @Test
+    void testCreateCarrera_missingFacultad() throws Exception {
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/carreras/create",
+            "nombreCarrera=Licenciatura&facultad=&duracion=4&titulo=Licenciado",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
+        assertTrue(location.contains("Facultad"));
+    }
+
+    @Test
+    void testCreateCarrera_missingDuracion() throws Exception {
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/carreras/create",
+            "nombreCarrera=Licenciatura&facultad=FCEFyN&duracion=&titulo=Licenciado",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
+        assertTrue(location.contains("Duraci"));
+    }
+
+    @Test
+    void testCreateCarrera_missingTitulo() throws Exception {
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/carreras/create",
+            "nombreCarrera=Licenciatura&facultad=FCEFyN&duracion=4&titulo=",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
+        assertTrue(location.contains("T"));
+    }
+
+    @Test
+    void testCreateCarrera_duracionZero() throws Exception {
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/carreras/create",
+            "nombreCarrera=Licenciatura&facultad=FCEFyN&duracion=0&titulo=Licenciado",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
+    }
+
+    @Test
+    void testCreateCarrera_duracionNegativa() throws Exception {
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/carreras/create",
+            "nombreCarrera=Licenciatura&facultad=FCEFyN&duracion=-1&titulo=Licenciado",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
+    }
+
+    @Test
+    void testEditCarrera_missingFields() throws Exception {
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Base.exec(
+                "INSERT INTO carrera " +
+                "(id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES " +
+                "(1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas')"
+            );
+        } finally {
+            Base.close();
+        }
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/carreras/edit",
+            "id_carrera=1&nombreCarrera=Licenciatura&facultad=&duracion=4&titulo=",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
+        assertTrue(location.contains("edit"));
+    }
+
+    @Test
+    void testEditCarrera_invalidDuracion() throws Exception {
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Base.exec(
+                "INSERT INTO carrera " +
+                "(id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES " +
+                "(1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas')"
+            );
+        } finally {
+            Base.close();
+        }
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/carreras/edit",
+            "id_carrera=1&nombreCarrera=Licenciatura&facultad=FCEFyN&duracion=abc&titulo=Licenciado",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
     }
 
     @Test

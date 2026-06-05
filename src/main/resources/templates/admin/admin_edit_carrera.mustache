@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{#isEdit}}Editar Carrera{{/isEdit}}{{^isEdit}}Crear Carrera{{/isEdit}}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 26px;
+            box-shadow: 0 20px 55px rgba(0,0,0,0.18);
+        }
+
+        .header {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;
+            margin-bottom:24px;
+        }
+
+        .header h1 {
+            margin:0;
+            font-size:2rem;
+            color:#333;
+        }
+
+        .button {
+            display:inline-block;
+            padding:12px 18px;
+            border-radius:8px;
+            text-decoration:none;
+            color:white;
+            font-weight:600;
+        }
+
+        .button.secondary {
+            background:#6c757d;
+        }
+
+        .form-group {
+            margin-bottom:16px;
+        }
+
+        label {
+            display:block;
+            margin-bottom:8px;
+            color:#333;
+            font-weight:600;
+        }
+
+        input {
+            width:100%;
+            padding:12px 14px;
+            border:1px solid #cbd5e1;
+            border-radius:10px;
+            box-sizing:border-box;
+        }
+
+        .error-message,
+        .success-message {
+            margin-bottom: 20px;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-weight: 600;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .form-footer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        button[type="submit"] {
+            padding: 14px 18px;
+            border: none;
+            border-radius: 10px;
+            background: #f6c23e;
+            color: #111;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div>
+            <h1>{{#isEdit}}Editar Carrera{{/isEdit}}{{^isEdit}}Crear Carrera{{/isEdit}}</h1>
+            {{#isEdit}}<p>ID: {{carrera.id_carrera}}</p>{{/isEdit}}
+        </div>
+        <a href="/admin/carreras" class="button secondary">← Volver</a>
+    </div>
+
+    {{#successMessage}}
+    <div class="success-message">{{successMessage}}</div>
+    {{/successMessage}}
+
+    {{#errorMessage}}
+    <div class="error-message">{{errorMessage}}</div>
+    {{/errorMessage}}
+
+    <form action="{{formAction}}" method="POST">
+        {{#isEdit}}
+        <input type="hidden" name="id_carrera" value="{{carrera.id_carrera}}" />
+        {{/isEdit}}
+
+        <div class="form-group">
+            <label>Nombre de la carrera</label>
+            <input type="text" name="nombreCarrera" required value="{{carrera.nombreCarrera}}" />
+        </div>
+
+        <div class="form-group">
+            <label>Facultad</label>
+            <input type="text" name="facultad" required value="{{carrera.facultad}}" />
+        </div>
+
+        <div class="form-group">
+            <label>Duración (años)</label>
+            <input type="number" name="duracion" min="1" required step="1" value="{{carrera.duracion}}" />
+        </div>
+
+        <div class="form-group">
+            <label>Título</label>
+            <input type="text" name="titulo" required value="{{carrera.titulo}}" />
+        </div>
+
+        <div class="form-footer">
+            <button type="submit">{{#isEdit}}Guardar cambios{{/isEdit}}{{^isEdit}}Crear carrera{{/isEdit}}</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

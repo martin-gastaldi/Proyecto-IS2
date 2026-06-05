@@ -147,6 +147,30 @@ public class App {
             AdminController::dashboard,
             engine);
 
+        get("/admin/carreras",
+            AdminController::manageCarreras,
+            engine);
+
+        get("/admin/carreras/new",
+            AdminController::createCarreraView,
+            engine);
+
+        get("/admin/carreras/edit/:id",
+            AdminController::editCarreraView,
+            engine);
+
+        post("/admin/carreras/create",
+            AdminController::createCarrera,
+            engine);
+
+        post("/admin/carreras/edit",
+            AdminController::editCarrera,
+            engine);
+
+        post("/admin/carreras/delete",
+            AdminController::deleteCarrera,
+            engine);
+
         get("/admin/create",
             AdminController::createView,
             engine);
