@@ -21,6 +21,7 @@ import com.is1.proyecto.models.Carrera;
 import com.is1.proyecto.models.Dictado;
 import com.is1.proyecto.models.Docente;
 import com.is1.proyecto.models.Materia;
+import com.is1.proyecto.models.PlanEstudio;
 import com.is1.proyecto.models.Persona;
 import com.is1.proyecto.models.User;
 
@@ -116,6 +117,8 @@ public class AppIntegrationTest {
 
             // Orden importante por FK
             Base.exec("DELETE FROM dictado");
+            Base.exec("DELETE FROM plan_materia");
+            Base.exec("DELETE FROM plan_estudio");
 	        Base.exec("DELETE FROM cursado");
             Base.exec("DELETE FROM inscripcion");
             Base.exec("DELETE FROM administrador");
@@ -799,6 +802,247 @@ public class AppIntegrationTest {
         } finally {
             Base.close();
         }
+    }
+
+    @Test
+    void testManagePlanes_OK() throws Exception {
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Base.exec(
+                "INSERT INTO carrera " +
+                "(id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES " +
+                "(1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas')"
+            );
+
+            Base.exec(
+                "INSERT INTO plan_estudio " +
+                "(id_plan, anio, vigente, descripcion, id_carrera) VALUES " +
+                "(1, 2025, 1, 'Plan de ejemplo', 1)"
+            );
+        } finally {
+            Base.close();
+        }
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = get("/admin/planes", cookie);
+
+        assertEquals(200, res.statusCode());
+        assertTrue(res.body().contains("Plan de ejemplo"));
+        assertTrue(res.body().contains("Ingenieria en Sistemas"));
+    }
+
+    @Test
+    void testCreatePlan_OK() throws Exception {
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Base.exec(
+                "INSERT INTO carrera " +
+                "(id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES " +
+                "(1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas')"
+            );
+        } finally {
+            Base.close();
+        }
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/planes/create",
+            "anio=2025&vigente=on&descripcion=Plan+principal&id_carrera=1",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            PlanEstudio plan = PlanEstudio.findFirst(
+                "descripcion = ?",
+                "Plan principal"
+            );
+
+            assertNotNull(plan);
+            assertEquals(2025, plan.getInteger("anio"));
+            assertTrue(plan.getBoolean("vigente"));
+            assertEquals(1, plan.getInteger("id_carrera"));
+        } finally {
+            Base.close();
+        }
+    }
+
+    @Test
+    void testEditPlan_OK() throws Exception {
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Base.exec(
+                "INSERT INTO carrera " +
+                "(id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES " +
+                "(1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas')"
+            );
+            Base.exec(
+                "INSERT INTO plan_estudio " +
+                "(id_plan, anio, vigente, descripcion, id_carrera) VALUES " +
+                "(1, 2024, 1, 'Plan antiguo', 1)"
+            );
+        } finally {
+            Base.close();
+        }
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/planes/edit",
+            "id_plan=1&anio=2026&vigente=on&descripcion=Plan+actualizado&id_carrera=1",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            PlanEstudio plan = PlanEstudio.findFirst("id_plan = ?", 1);
+            assertNotNull(plan);
+            assertEquals(2026, plan.getInteger("anio"));
+            assertEquals("Plan actualizado", plan.getString("descripcion"));
+        } finally {
+            Base.close();
+        }
+    }
+
+    @Test
+    void testDeletePlan_OK() throws Exception {
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Base.exec(
+                "INSERT INTO carrera " +
+                "(id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES " +
+                "(1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas')"
+            );
+            Base.exec(
+                "INSERT INTO plan_estudio " +
+                "(id_plan, anio, vigente, descripcion, id_carrera) VALUES " +
+                "(1, 2025, 1, 'Plan eliminar', 1)"
+            );
+        } finally {
+            Base.close();
+        }
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/planes/delete",
+            "id_plan=1",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            PlanEstudio plan = PlanEstudio.findFirst("id_plan = ?", 1);
+            assertEquals(null, plan);
+        } finally {
+            Base.close();
+        }
+    }
+
+    @Test
+    void testCreatePlan_missingCarrera() throws Exception {
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/planes/create",
+            "anio=2025&vigente=on&descripcion=Plan+prueba&id_carrera=",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
+        assertTrue(location.contains("Carrera"));
+    }
+
+    @Test
+    void testCreatePlan_missingAnio() throws Exception {
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Base.exec(
+                "INSERT INTO carrera " +
+                "(id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES " +
+                "(1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas')"
+            );
+        } finally {
+            Base.close();
+        }
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/planes/create",
+            "anio=&vigente=on&descripcion=Plan+prueba&id_carrera=1",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
+        assertTrue(location.contains("requerido"));
+    }
+
+    @Test
+    void testCreatePlan_missingDescripcion() throws Exception {
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Base.exec(
+                "INSERT INTO carrera " +
+                "(id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES " +
+                "(1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas')"
+            );
+        } finally {
+            Base.close();
+        }
+
+        String cookie = loginAdmin();
+
+        HttpResponse<String> res = post(
+            "/admin/planes/create",
+            "anio=2025&vigente=on&descripcion=&id_carrera=1",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
+        assertTrue(location.contains("requerida"));
     }
 
     @Test
