@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.is1.proyecto.models.Carrera;
+import com.is1.proyecto.models.PlanEstudio;
 
 import spark.Request;
 
@@ -33,6 +34,29 @@ public class AdminDao {
         return carreras;
     }
 
+    public List<Map<String, Object>> obtenerCarreras(Integer selectedCarrera) {
+
+        List<Map<String, Object>> carreras = new ArrayList<>();
+
+        List<Carrera> lista = Carrera.findAll();
+
+        for (Carrera carrera : lista) {
+
+            Map<String, Object> data = new HashMap<>();
+
+            data.put("id_carrera", carrera.getIdCarrera());
+            data.put("nombreCarrera", carrera.getNombreCarrera());
+            data.put("facultad", carrera.getFacultad());
+            data.put("duracion", carrera.getDuracion());
+            data.put("titulo", carrera.getTitulo());
+            data.put("selected", selectedCarrera != null && carrera.getIdCarrera().equals(selectedCarrera) ? "selected" : "");
+
+            carreras.add(data);
+        }
+
+        return carreras;
+    }
+
     public Map<String, Object> obtenerCarrera(Integer id) {
 
         Carrera carrera = Carrera.findFirst("id_carrera = ?", id);
@@ -50,6 +74,112 @@ public class AdminDao {
         data.put("titulo", carrera.getTitulo());
 
         return data;
+    }
+
+    public List<Map<String, Object>> obtenerPlanes(Integer idCarrera) {
+
+        List<Map<String, Object>> planes = new ArrayList<>();
+        List<PlanEstudio> lista;
+
+        if (idCarrera == null) {
+            lista = PlanEstudio.findAll();
+        } else {
+            lista = PlanEstudio.where("id_carrera = ?", idCarrera);
+        }
+
+        for (PlanEstudio plan : lista) {
+
+            Map<String, Object> data = new HashMap<>();
+            Carrera carrera = Carrera.findFirst("id_carrera = ?", plan.getIdCarrera());
+
+            data.put("id_plan", plan.getIdPlanEstudio());
+            data.put("anio", plan.getAnio());
+            data.put("vigente", plan.getVigente() ? "Sí" : "No");
+            data.put("descripcion", plan.getDescripcion());
+            data.put("id_carrera", plan.getIdCarrera());
+            data.put("nombreCarrera", carrera != null ? carrera.getNombreCarrera() : "Sin carrera");
+
+            planes.add(data);
+        }
+
+        return planes;
+    }
+
+    public Map<String, Object> obtenerPlan(Integer id) {
+
+        PlanEstudio plan = PlanEstudio.findFirst("id_plan = ?", id);
+
+        if (plan == null) {
+            throw new IllegalArgumentException("Plan de estudio no encontrado");
+        }
+
+        Map<String, Object> data = new HashMap<>();
+
+        data.put("id_plan", plan.getIdPlanEstudio());
+        data.put("anio", plan.getAnio());
+        data.put("vigente", plan.getVigente());
+        data.put("descripcion", plan.getDescripcion());
+        data.put("id_carrera", plan.getIdCarrera());
+
+        return data;
+    }
+
+    public void crearPlan(Request req) {
+
+        String carreraId = req.queryParams("id_carrera");
+        String anioStr = req.queryParams("anio");
+        String descripcion = req.queryParams("descripcion");
+        boolean vigente = req.queryParams("vigente") != null;
+
+        if (carreraId == null || carreraId.isBlank()) {
+            throw new IllegalArgumentException("Carrera es obligatoria");
+        }
+
+        PlanEstudio plan = new PlanEstudio();
+
+        plan.set("id_carrera", Integer.valueOf(carreraId));
+        plan.set("anio", Integer.valueOf(anioStr));
+        plan.set("descripcion", descripcion);
+        plan.set("vigente", vigente);
+
+        plan.saveIt();
+    }
+
+    public void editarPlan(Request req) {
+
+        String idStr = req.queryParams("id_plan");
+        String carreraId = req.queryParams("id_carrera");
+        String anioStr = req.queryParams("anio");
+        String descripcion = req.queryParams("descripcion");
+        boolean vigente = req.queryParams("vigente") != null;
+
+        if (idStr == null || idStr.isBlank()) {
+            throw new IllegalArgumentException("ID de plan requerido");
+        }
+
+        PlanEstudio plan = PlanEstudio.findFirst("id_plan = ?", Integer.valueOf(idStr));
+
+        if (plan == null) {
+            throw new IllegalArgumentException("Plan de estudio no encontrado");
+        }
+
+        plan.set("id_carrera", Integer.valueOf(carreraId));
+        plan.set("anio", Integer.valueOf(anioStr));
+        plan.set("descripcion", descripcion);
+        plan.set("vigente", vigente);
+
+        plan.saveIt();
+    }
+
+    public void eliminarPlan(Integer id) {
+
+        PlanEstudio plan = PlanEstudio.findFirst("id_plan = ?", id);
+
+        if (plan == null) {
+            throw new IllegalArgumentException("Plan de estudio no encontrado");
+        }
+
+        plan.delete();
     }
 
     public void crearCarrera(Request req) {

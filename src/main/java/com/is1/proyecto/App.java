@@ -185,6 +185,30 @@ public class App {
             AdminController::deleteCarrera,
             engine);
 
+        get("/admin/planes",
+            AdminController::managePlanes,
+            engine);
+
+        get("/admin/planes/new",
+            AdminController::createPlanView,
+            engine);
+
+        get("/admin/planes/edit/:id",
+            AdminController::editPlanView,
+            engine);
+
+        post("/admin/planes/create",
+            AdminController::createPlan,
+            engine);
+
+        post("/admin/planes/edit",
+            AdminController::editPlan,
+            engine);
+
+        post("/admin/planes/delete",
+            AdminController::deletePlan,
+            engine);
+
         get("/admin/create",
             AdminController::createView,
             engine);
