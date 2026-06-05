@@ -1,0 +1,50 @@
+<div class="container">
+
+    <div class="header">
+        <h1>📘 Nueva Materia</h1>
+        <p>Registrar una materia en el sistema</p>
+    </div>
+
+    <form action="/admin/materias/create"
+          method="POST">
+
+        <input
+            type="text"
+            name="nombreMateria"
+            placeholder="Nombre de la materia">
+
+        <input
+            type="number"
+            name="anio"
+            placeholder="Año">
+
+        <input
+            type="number"
+            name="cuatrimestre"
+            placeholder="Cuatrimestre">
+
+        <input
+            type="number"
+            name="carga_horaria"
+            placeholder="Carga horaria">
+
+        <input
+            type="number"
+            name="id_carrera"
+            placeholder="ID Carrera">
+
+        <button type="submit"
+                class="btn btn-primary">
+            Crear Materia
+        </button>
+
+    </form>
+
+    <div class="footer-actions">
+        <a href="/admin/materias"
+           class="btn btn-secondary">
+           ← Volver
+        </a>
+    </div>
+
+</div>

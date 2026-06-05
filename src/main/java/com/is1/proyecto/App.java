@@ -1,19 +1,19 @@
 package com.is1.proyecto;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.port;
-import static spark.Spark.post;
-
 import org.javalite.activejdbc.Base;
 
 import com.is1.proyecto.config.DBConfigSingleton;
 import com.is1.proyecto.controller.AdminController;
 import com.is1.proyecto.controller.AuthController;
 import com.is1.proyecto.controller.DocenteController;
+import com.is1.proyecto.controller.MateriaController;
 
+import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.port;
+import static spark.Spark.post;
 import spark.template.mustache.MustacheTemplateEngine;
 
 public class App {
@@ -178,5 +178,62 @@ public class App {
         post("/admin/create",
             AdminController::createAdmin,
             engine);
+
+        get(
+            "/admin/materias",
+            MateriaController::listar,
+            engine
+        );
+
+        get(
+            "/admin/materias/new",
+            MateriaController::formNueva,
+            engine
+        );
+
+        post(
+            "/admin/materias/new",
+            MateriaController::crear
+        );
+
+        // EDITAR
+
+        get(
+            "/admin/materias/edit/:id",
+            MateriaController::editView,
+            engine
+        );
+
+        post(
+            "/admin/materias/edit",
+            MateriaController::editar
+        );
+
+
+
+        // ELIMINAR
+
+        get(
+            "/admin/materias/delete/:id",
+            MateriaController::eliminar
+        );
+
+        // CORRELATIVAS
+
+        get(
+            "/admin/materias/correlativas/:id",
+            MateriaController::correlativas,
+            engine
+        );
+
+        post(
+            "/admin/materias/correlativas/add",
+            MateriaController::agregarCorrelativa
+        );
+
+        post(
+            "/admin/materias/correlativas/delete",
+            MateriaController::eliminarCorrelativa
+        );
     }
 }

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Administrar Correlativas</title>
+
+<style>
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(
+        135deg,
+        #667eea 0%,
+        #764ba2 100%
+    );
+    min-height:100vh;
+    padding:30px;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+
+h1{
+    color:#667eea;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#666;
+    margin-bottom:25px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:30px;
+}
+
+th{
+    background:#667eea;
+    color:white;
+}
+
+th,td{
+    padding:12px;
+    border-bottom:1px solid #ddd;
+}
+
+.btn{
+    border:none;
+    padding:8px 14px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.btn-primary{
+    background:#667eea;
+    color:white;
+}
+
+.btn-danger{
+    background:#dc3545;
+    color:white;
+}
+
+.btn-secondary{
+    background:#e0e0e0;
+    color:#333;
+    text-decoration:none;
+}
+
+select{
+    width:100%;
+    padding:10px;
+    margin-bottom:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+
+.card{
+    background:#f8f9ff;
+    padding:20px;
+    border-radius:8px;
+}
+
+.actions{
+    margin-top:20px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>🔗 Correlativas</h1>
+
+    <p class="subtitle">
+        Materia: <strong>{{materia.nombreMateria}}</strong>
+    </p>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Materia Correlativa</th>
+                <th>Condición</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {{#correlativas}}
+
+            <tr>
+
+                <td>{{nombreCorrelativa}}</td>
+
+                <td>{{condicion}}</td>
+
+                <td>
+
+                    <form
+                        action="/admin/materias/correlativas/delete"
+                        method="POST"
+                        onsubmit="return confirm('¿Eliminar correlativa?')">
+
+                        <input
+                            type="hidden"
+                            name="id_materia"
+                            value="{{idMateria}}">
+
+                        <input
+                            type="hidden"
+                            name="id_correlativa"
+                            value="{{id_correlativa}}">
+
+                        <button
+                            type="submit"
+                            class="btn btn-danger">
+                            🗑 Eliminar
+                        </button>
+
+                    </form>
+
+                </td>
+
+            </tr>
+
+        {{/correlativas}}
+
+        {{^correlativas}}
+
+            <tr>
+                <td colspan="3">
+                    No existen correlativas cargadas.
+                </td>
+            </tr>
+
+        {{/correlativas}}
+
+        </tbody>
+
+    </table>
+
+    <div class="card">
+
+        <h2>➕ Agregar correlativa</h2>
+
+        <form
+            action="/admin/materias/correlativas/add"
+            method="POST">
+
+            <input
+                type="hidden"
+                name="id_materia"
+                value="{{idMateria}}">
+
+            <select name="id_correlativa" required>
+
+                {{#materiasDisponibles}}
+
+                <option value="{{id_materia}}">
+                    {{nombreMateria}}
+                </option>
+
+                {{/materiasDisponibles}}
+
+            </select>
+
+            <select name="condicion">
+
+                <option value="REGULAR">
+                    REGULAR
+                </option>
+
+                <option value="APROBADA">
+                    APROBADA
+                </option>
+
+            </select>
+
+            <button
+                type="submit"
+                class="btn btn-primary">
+                Guardar correlativa
+            </button>
+
+        </form>
+
+    </div>
+
+    <div class="actions">
+
+        <a
+            href="/admin/materias"
+            class="btn btn-secondary">
+            ← Volver a materias
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

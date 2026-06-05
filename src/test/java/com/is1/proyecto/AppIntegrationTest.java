@@ -1527,5 +1527,36 @@ public class AppIntegrationTest {
 
             Base.close();
         }
+
+    }
+
+    @Test
+    void testCreateMateria() throws Exception {
+
+        post(
+            "/admin/materias/new",
+            "nombreMateria=IS2" +
+            "&anio=2" +
+            "&cuatrimestre=1" +
+            "&carga_horaria=96" +
+            "&id_carrera=1"
+        );
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+
+            Materia materia =
+                Materia.findFirst(
+                    "nombreMateria = ?",
+                    "IS2"
+                );
+
+            assertNotNull(materia);
+
+        } finally {
+
+            Base.close();
+        }
     }
 }
