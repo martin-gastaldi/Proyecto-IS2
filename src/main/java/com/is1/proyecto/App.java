@@ -7,6 +7,7 @@ import com.is1.proyecto.controller.AdminController;
 import com.is1.proyecto.controller.AuthController;
 import com.is1.proyecto.controller.DocenteController;
 import com.is1.proyecto.controller.MateriaController;
+import com.is1.proyecto.controller.EstudianteController;
 
 import static spark.Spark.after;
 import static spark.Spark.before;
@@ -140,6 +141,19 @@ public class App {
 
         get("/docente/alumnos/:id",
             DocenteController::alumnosMateria,
+            engine);
+
+        // ESTUDIANTE - perfil y edición
+        get("/estudiante/perfil",
+            EstudianteController::profile,
+            engine);
+
+        get("/estudiante/perfil/editar",
+            EstudianteController::editProfileView,
+            engine);
+
+        post("/estudiante/perfil/editar",
+            EstudianteController::updateProfile,
             engine);
 
         // ADMIN
