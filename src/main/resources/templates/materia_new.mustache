@@ -1,3 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Nueva Materia</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    background:#FFF;
+    min-height:100vh;
+    padding:30px;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+    overflow:hidden;
+}
+
+.header{
+    padding:30px;
+    background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+    color:white;
+}
+
+.header h1{
+    margin-bottom:10px;
+}
+
+.header p{
+    opacity:.9;
+}
+
+/* FORM */
+
+.form-container{
+    padding:30px;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+input{
+    padding:12px 14px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    font-size:14px;
+    transition:.3s;
+}
+
+input:focus{
+    outline:none;
+    border-color:#667eea;
+    box-shadow:0 0 0 3px rgba(102,126,234,.2);
+}
+
+/* BUTTONS */
+
+.btn{
+    text-decoration:none;
+    border:none;
+    border-radius:8px;
+    padding:10px 18px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+}
+
+.btn-primary{
+    background:#667eea;
+    color:white;
+}
+
+.btn-secondary{
+    background:#e9ecef;
+    color:#333;
+}
+
+/* FOOTER */
+
+.footer-actions{
+    padding:30px;
+    display:flex;
+    justify-content:space-between;
+    background:#fafafa;
+    border-top:1px solid #eee;
+}
+
+</style>
+</head>
+
+<body>
+
 <div class="container">
 
     <div class="header">
@@ -5,46 +114,37 @@
         <p>Registrar una materia en el sistema</p>
     </div>
 
-    <form action="/admin/materias/create"
-          method="POST">
+    <form action="/admin/materias/create" method="POST">
 
-        <input
-            type="text"
-            name="nombreMateria"
-            placeholder="Nombre de la materia">
+        <div class="form-container">
 
-        <input
-            type="number"
-            name="anio"
-            placeholder="Año">
+            <input type="text" name="nombreMateria" placeholder="Nombre de la materia">
 
-        <input
-            type="number"
-            name="cuatrimestre"
-            placeholder="Cuatrimestre">
+            <input type="number" name="anio" placeholder="Año">
 
-        <input
-            type="number"
-            name="carga_horaria"
-            placeholder="Carga horaria">
+            <input type="number" name="cuatrimestre" placeholder="Cuatrimestre">
 
-        <input
-            type="number"
-            name="id_carrera"
-            placeholder="ID Carrera">
+            <input type="number" name="carga_horaria" placeholder="Carga horaria">
 
-        <button type="submit"
-                class="btn btn-primary">
-            Crear Materia
-        </button>
+            <input type="number" name="id_carrera" placeholder="ID Carrera">
+
+            <button type="submit" class="btn btn-primary">
+                Crear Materia
+            </button>
+
+        </div>
 
     </form>
 
     <div class="footer-actions">
-        <a href="/admin/materias"
-           class="btn btn-secondary">
-           ← Volver
+
+        <a href="/admin/materias" class="btn btn-secondary">
+            ← Volver
         </a>
+
     </div>
 
 </div>
+
+</body>
+</html>
