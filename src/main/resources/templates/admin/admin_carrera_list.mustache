@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestionar Carreras</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            background: white;
+            max-width: 1100px;
+            margin: 0 auto;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.18);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+
+        .top-actions p {
+            color: #555;
+            margin: 6px 0 0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .button.primary {
+            background: #667eea;
+        }
+
+        .button.secondary {
+            background: #6c757d;
+        }
+
+        .button.delete {
+            background: #e74a3b;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+        }
+
+        .message {
+            padding: 14px 18px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        .card {
+            border: 1px solid #e3e8f0;
+            border-radius: 14px;
+            padding: 22px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 18px;
+            align-items: center;
+            background: #fbfcff;
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 1.3rem;
+            color: #2b2b2b;
+        }
+
+        .card p {
+            margin: 6px 0;
+            color: #4a4a4a;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .actions form {
+            margin: 0;
+            width: 100%;
+        }
+
+        .actions button,
+        .actions a {
+            width: 100%;
+            min-height: 44px;
+            padding: 12px 14px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+
+        .actions .edit {
+            background: #f6c23e;
+            color: #111;
+        }
+
+        .actions .delete {
+            background: #e74a3b;
+        }
+
+        .empty-state {
+            padding: 22px;
+            background: #f8f9fc;
+            border: 1px dashed #d1d5db;
+            border-radius: 14px;
+            text-align: center;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top-actions">
+        <div>
+            <h1>Gestionar Carreras</h1>
+            <p>Desde aquí puedes crear, editar y eliminar carreras existentes.</p>
+        </div>
+        <div>
+            <a href="/admin/panel" class="button secondary">← Volver</a>
+            <a href="/admin/carreras/new" class="button primary">➕ Nueva Carrera</a>
+        </div>
+    </div>
+
+    {{#successMessage}}
+    <div class="message success">{{successMessage}}</div>
+    {{/successMessage}}
+
+    {{#errorMessage}}
+    <div class="message error">{{errorMessage}}</div>
+    {{/errorMessage}}
+
+    <div class="grid">
+        {{#carreras}}
+        <div class="card">
+            <div>
+                <h2>{{nombreCarrera}}</h2>
+                <p><strong>Facultad:</strong> {{facultad}}</p>
+                <p><strong>Duración:</strong> {{duracion}}</p>
+                <p><strong>Título:</strong> {{titulo}}</p>
+            </div>
+            <div class="actions">
+                <a href="/admin/carreras/edit/{{id_carrera}}" class="edit">✏️ Editar</a>
+                <form action="/admin/carreras/delete" method="POST" onsubmit="return confirm('¿Eliminar carrera {{nombreCarrera}}?');">
+                    <input type="hidden" name="id_carrera" value="{{id_carrera}}">
+                    <button type="submit" class="delete">🗑 Eliminar</button>
+                </form>
+            </div>
+        </div>
+        {{/carreras}}
+    </div>
+
+    {{^carreras}}
+    <div class="empty-state">
+        No hay carreras registradas aún. Presiona "Nueva Carrera" para comenzar.
+    </div>
+    {{/carreras}}
+</div>
+</body>
+</html>
