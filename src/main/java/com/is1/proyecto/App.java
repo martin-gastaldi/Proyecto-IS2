@@ -13,6 +13,7 @@ import com.is1.proyecto.config.DBConfigSingleton;
 import com.is1.proyecto.controller.AdminController;
 import com.is1.proyecto.controller.AuthController;
 import com.is1.proyecto.controller.DocenteController;
+import com.is1.proyecto.services.Correlatividades;
 
 import spark.template.mustache.MustacheTemplateEngine;
 
