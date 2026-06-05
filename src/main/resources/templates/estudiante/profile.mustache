@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis datos personales</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8b1e2d 0%, #b03045 50%, #d65b6a 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;
+            margin-bottom:24px;
+        }
+        
+        .header h1 {
+            margin:0;
+            font-size:2rem;
+            color:#333;
+        }
+
+        .header p {
+            margin:4px 0 0;
+            color:#666;
+        }
+        
+        .button {
+            display:inline-block;
+            padding:12px 18px;
+            border-radius:8px;
+            text-decoration:none;
+            color:white;
+            font-weight:600;
+        }
+        
+        .button.primary {
+            background: linear-gradient(135deg, #8b1e2d 0%, #5b0f1a 100%);
+        }
+        
+        .button.secondary {
+            background:#6c757d;
+        }
+        
+        .card {
+            border:1px solid #e2e7f0;
+            border-radius:14px;
+            padding:24px;
+            background:#fff4f5;
+        }
+        
+        .card p {
+            margin:14px 0;
+            color:#34495e;
+        }
+
+        .card strong {
+            color: #8b1e2d;
+        }
+        
+        .message {
+            padding: 14px 18px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .message.success {
+            background: #fff4f5;
+            color: #8b1e2d;
+            border-left: 4px solid #8b1e2d;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div>
+            <h1>Mis datos personales</h1>
+            <p>Consulta y actualiza tu información personal.</p>
+        </div>
+        <a href="/dashboard" class="button secondary">← Volver</a>
+    </div>
+
+    {{#successMessage}}
+    <div class="message success">{{successMessage}}</div>
+    {{/successMessage}}
+
+    {{#errorMessage}}
+    <div class="message error">{{errorMessage}}</div>
+    {{/errorMessage}}
+
+    <div class="card">
+        <p><strong>DNI:</strong> {{dni}}</p>
+        <p><strong>Nombre:</strong> {{estudiante.nombre}}</p>
+        <p><strong>Apellido:</strong> {{estudiante.apellido}}</p>
+        <p><strong>Correo:</strong> {{estudiante.correo}}</p>
+        <p><strong>Teléfono:</strong> {{estudiante.telefono}}</p>
+        <p><strong>Legajo:</strong> {{estudiante.legajo}}</p>
+        <p><strong>Fecha de ingreso:</strong> {{estudiante.fecha_ingreso}}</p>
+    </div>
+
+    <div style="margin-top: 24px; text-align: right;">
+        <a href="/estudiante/perfil/editar" class="button primary">✏️ Editar datos</a>
+    </div>
+
+</div>
+
+</body>
+</html>
