@@ -1,8 +1,10 @@
 package com.is1.proyecto.models;
 import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.annotations.IdName;
 import org.javalite.activejdbc.annotations.Table;
 
 @Table ("plan_estudio")
+@IdName("id_plan")
 public class PlanEstudio extends Model {
 
     public Integer getIdPlanEstudio(){

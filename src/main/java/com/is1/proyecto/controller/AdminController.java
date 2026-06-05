@@ -186,6 +186,204 @@ public class AdminController {
         return null;
     }
 
+    public static ModelAndView managePlanes(Request req,
+                                            Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        Map<String, Object> model = new HashMap<>();
+
+        String carreraParam = req.queryParams("carrera");
+        Integer selectedCarrera = null;
+
+        if (carreraParam != null && !carreraParam.isBlank()) {
+            try {
+                selectedCarrera = Integer.valueOf(carreraParam);
+            } catch (NumberFormatException ignored) {
+                selectedCarrera = null;
+            }
+        }
+
+        model.put("planes", adminDao.obtenerPlanes(selectedCarrera));
+        model.put("carreras", adminDao.obtenerCarreras(selectedCarrera));
+        model.put("selectedCarrera", selectedCarrera);
+        model.put("successMessage", req.queryParams("message"));
+        model.put("errorMessage", req.queryParams("error"));
+
+        return new ModelAndView(
+            model,
+            "admin/admin_plan_list.mustache"
+        );
+    }
+
+    public static ModelAndView createPlanView(Request req,
+                                              Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("formAction", "/admin/planes/create");
+        model.put("isEdit", false);
+        model.put("carreras", adminDao.obtenerCarreras(null));
+        model.put("successMessage", req.queryParams("message"));
+        model.put("errorMessage", req.queryParams("error"));
+
+        return new ModelAndView(
+            model,
+            "admin/admin_edit_plan.mustache"
+        );
+    }
+
+    public static ModelAndView editPlanView(Request req,
+                                            Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        Integer id = Integer.valueOf(req.params(":id"));
+        Map<String, Object> plan = adminDao.obtenerPlan(id);
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("formAction", "/admin/planes/edit");
+        model.put("isEdit", true);
+        model.put("plan", plan);
+        model.put("carreras", adminDao.obtenerCarreras((Integer) plan.get("id_carrera")));
+        model.put("successMessage", req.queryParams("message"));
+        model.put("errorMessage", req.queryParams("error"));
+
+        return new ModelAndView(
+            model,
+            "admin/admin_edit_plan.mustache"
+        );
+    }
+
+    public static ModelAndView createPlan(Request req,
+                                          Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        try {
+            String validationError = validarCamposPlan(req);
+            if (validationError != null) {
+                String encoded = "";
+                try {
+                    encoded = URLEncoder.encode(validationError, "UTF-8");
+                } catch (Exception ex) {
+                    encoded = validationError.replace(" ", "%20");
+                }
+                res.redirect("/admin/planes/new?error=" + encoded);
+                return null;
+            }
+
+            adminDao.crearPlan(req);
+            res.redirect("/admin/planes?message=Plan creado");
+        } catch (Exception e) {
+            res.redirect("/admin/planes/new?error=" + e.getMessage());
+        }
+
+        return null;
+    }
+
+    public static ModelAndView editPlan(Request req,
+                                        Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        try {
+            String validationError = validarCamposPlan(req);
+            if (validationError != null) {
+                String id = req.queryParams("id_plan");
+                String encoded = "";
+                try {
+                    encoded = URLEncoder.encode(validationError, "UTF-8");
+                } catch (Exception ex) {
+                    encoded = validationError.replace(" ", "%20");
+                }
+                res.redirect("/admin/planes/edit/" + id + "?error=" + encoded);
+                return null;
+            }
+
+            adminDao.editarPlan(req);
+            res.redirect("/admin/planes?message=Plan actualizado");
+        } catch (Exception e) {
+            String id = req.queryParams("id_plan");
+            res.redirect("/admin/planes/edit/" + id + "?error=" + e.getMessage());
+        }
+
+        return null;
+    }
+
+    public static ModelAndView deletePlan(Request req,
+                                          Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        try {
+            String idStr = req.queryParams("id_plan");
+
+            if (idStr == null || idStr.isBlank()) {
+                throw new IllegalArgumentException("ID de plan requerido");
+            }
+
+            Integer id = Integer.valueOf(idStr);
+
+            adminDao.eliminarPlan(id);
+            res.redirect("/admin/planes?message=Plan eliminado");
+        } catch (Exception e) {
+            res.redirect("/admin/planes?error=" + e.getMessage());
+        }
+
+        return null;
+    }
+
+    private static String validarCamposPlan(Request req) {
+        String anioStr = req.queryParams("anio");
+        String descripcion = req.queryParams("descripcion");
+        String idCarreraStr = req.queryParams("id_carrera");
+
+        if (idCarreraStr == null || idCarreraStr.isBlank()) {
+            return "Carrera es requerida";
+        }
+
+        if (anioStr == null || anioStr.isBlank()) {
+            return "Año es requerido";
+        }
+
+        if (descripcion == null || descripcion.isBlank()) {
+            return "Descripción es requerida";
+        }
+
+        try {
+            int anio = Integer.parseInt(anioStr);
+            if (anio < 1) {
+                return "Año inválido";
+            }
+        } catch (NumberFormatException e) {
+            return "Año inválido";
+        }
+
+        try {
+            Integer.valueOf(idCarreraStr);
+        } catch (NumberFormatException e) {
+            return "Carrera inválida";
+        }
+
+        return null;
+    }
+
     private static boolean validarAdmin(Request req,
                                         Response res) {
 
