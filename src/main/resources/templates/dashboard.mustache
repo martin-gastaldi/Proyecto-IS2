@@ -14,121 +14,141 @@
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #5b0f1a 0%, #8b1e2d 50%, #b03045 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8b1e2d 0%, #b03045 50%, #d65b6a 100%);
             min-height: 100vh;
-            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
         .container {
-            max-width: 1100px;
-            margin: auto;
+            width: 100%;
+            max-width: 900px;
             background: white;
-            border-radius: 16px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             padding: 40px;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.25);
         }
 
         .header {
             text-align: center;
             margin-bottom: 40px;
-            border-bottom: 4px solid #8b1e2d;
+            border-bottom: 3px solid #8b1e2d;
             padding-bottom: 20px;
         }
 
         .header h1 {
             color: #333;
-            font-size: 2.7rem;
+            font-size: 2.5em;
             margin-bottom: 10px;
         }
 
         .header p {
             color: #666;
-            font-size: 1.1rem;
+            font-size: 1.1em;
         }
 
-        .welcome-box {
+        .student-info {
             background: #fff4f5;
-            border-left: 6px solid #8b1e2d;
-            padding: 22px;
-            border-radius: 10px;
-            margin-bottom: 35px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            border-left: 4px solid #8b1e2d;
         }
 
-        .welcome-box p {
-            font-size: 1.2rem;
-            color: #444;
+        .student-info strong {
+            color: #333;
         }
 
-        .username {
+        .student-info .username {
             color: #8b1e2d;
             font-weight: bold;
         }
 
-        .cards-grid {
+        .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
-        .card {
-            border: 2px solid #ececec;
-            border-radius: 12px;
-            padding: 30px;
-            transition: 0.3s ease;
-            background: #fafafa;
-        }
-
-        .card:hover {
-            border-color: #8b1e2d;
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(139, 30, 45, 0.2);
-        }
-
-        .card .icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-
-        .card h2 {
-            color: #8b1e2d;
-            margin-bottom: 15px;
-            font-size: 1.7rem;
-        }
-
-        .card p {
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 20px;
+        .menu-item {
+            padding: 25px;
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
+            text-align: center;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
             text-decoration: none;
-            color: white;
-            background: linear-gradient(135deg, #8b1e2d 0%, #5b0f1a 100%);
-            transition: 0.3s;
-            font-weight: 600;
+            color: inherit;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            opacity: 0.95;
+        .menu-item:hover {
+            border-color: #8b1e2d;
+            background: linear-gradient(135deg, #fff4f5 0%, #ffe8ec 100%);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(139, 30, 45, 0.2);
+        }
+
+        .menu-item .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .menu-item h3 {
+            color: #8b1e2d;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .menu-item p {
+            color: #666;
+            font-size: 0.95em;
         }
 
         .actions {
-            margin-top: 45px;
             display: flex;
             gap: 15px;
-            flex-wrap: wrap;
             justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
         }
 
-        .logout {
-            background: linear-gradient(135deg, #cfc6c6 0%, #d1c4c4 100%);
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b1e2d 0%, #5b0f1a 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 30, 45, 0.4);
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+            transform: translateY(-2px);
         }
 
     </style>
@@ -139,11 +159,11 @@
 <div class="container">
 
     <div class="header">
-        <h1>🎓 Panel de Control</h1>
+        <h1>🎓 Panel de Alumnado</h1>
         <p>Sistema de Gestión Académica</p>
     </div>
 
-    <div class="welcome-box">
+    <div class="student-info">
 
         {{#username}}
         <p>
@@ -159,49 +179,23 @@
 
     </div>
 
-    <div class="cards-grid">
-
-        <div class="card">
-
+    <div class="menu-grid">
+        <a href="/estudiante/perfil" class="menu-item">
             <div class="icon">👤</div>
-
-            <h2>Tu Perfil</h2>
-
-            <p>
-                Gestiona la información de tu cuenta y visualiza tus datos personales.
-            </p>
-
-            <a href="/profile" class="btn">
-                Ver Perfil
-            </a>
-
+            <h3>Tu Perfil</h3>
+            <p>Gestiona la información de tu cuenta y visualiza tus datos personales.</p>
+        </a>
+        <div class="menu-item" style="opacity: 0.6; cursor: not-allowed;">
+            <div class="icon">📚</div>
+            <h3>Mis Materias</h3>
+            <p>Consulta las materias en las que estás inscripto.</p>
+            <small style="color: #999;">(Próximamente)</small>
         </div>
-
-        <div class="card">
-
-            <div class="icon">⚙️</div>
-
-            <h2>Configuraciones</h2>
-
-            <p>
-                Ajusta las preferencias y personaliza tu experiencia dentro del sistema.
-            </p>
-
-            <a href="/settings" class="btn">
-                Configuración
-            </a>
-
-        </div>
-
     </div>
 
     <div class="actions">
 
-        <a href="/" class="btn">
-            Ir al Inicio
-        </a>
-
-       <a href="/logout" class="btn logout" style="color: red;">
+       <a href="/logout" class="btn btn-danger">
             Cerrar Sesión
        </a>
 
