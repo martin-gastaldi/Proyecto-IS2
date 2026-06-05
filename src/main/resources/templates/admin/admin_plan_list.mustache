@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestionar Planes de Estudio</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            background: white;
+            max-width: 1100px;
+            margin: 0 auto;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.18);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .button.primary {
+            background: #667eea;
+        }
+
+        .button.secondary {
+            background: #6c757d;
+        }
+
+        .button.delete {
+            background: #e74a3b;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+        }
+
+        .message {
+            padding: 14px 18px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        select {
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            min-width: 240px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        .card {
+            border: 1px solid #e3e8f0;
+            border-radius: 14px;
+            padding: 22px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 18px;
+            align-items: flex-start;
+            background: #fbfcff;
+            min-width: 0;
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 1.3rem;
+            color: #2b2b2b;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .card p {
+            margin: 6px 0;
+            color: #4a4a4a;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .actions form {
+            margin: 0;
+            width: 100%;
+        }
+
+        .actions button,
+        .actions a {
+            width: 100%;
+            min-height: 44px;
+            padding: 12px 14px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+
+        .actions .edit {
+            background: #f6c23e;
+            color: #111;
+        }
+
+        .actions .delete {
+            background: #e74a3b;
+        }
+
+        .empty-state {
+            padding: 22px;
+            background: #f8f9fc;
+            border: 1px dashed #d1d5db;
+            border-radius: 14px;
+            text-align: center;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top-actions">
+        <div>
+            <h1>Gestionar Planes de Estudio</h1>
+            <p>Desde aquí puedes crear, editar y consultar planes por carrera.</p>
+        </div>
+        <div>
+            <a href="/admin/panel" class="button secondary">← Volver</a>
+            <a href="/admin/planes/new" class="button primary">➕ Nuevo Plan</a>
+        </div>
+    </div>
+
+    <form class="filter-row" action="/admin/planes" method="GET">
+        <select name="carrera">
+            <option value="">Todas las carreras</option>
+            {{#carreras}}
+            <option value="{{id_carrera}}" {{selected}}>{{nombreCarrera}}</option>
+            {{/carreras}}
+        </select>
+        <button class="button secondary">Filtrar</button>
+    </form>
+
+    {{#successMessage}}
+    <div class="message success">{{successMessage}}</div>
+    {{/successMessage}}
+
+    {{#errorMessage}}
+    <div class="message error">{{errorMessage}}</div>
+    {{/errorMessage}}
+
+    <div class="grid">
+        {{#planes}}
+        <div class="card">
+            <div>
+                <h2>{{nombreCarrera}}</h2>
+                <p><strong>Año:</strong> {{anio}}</p>
+                <p><strong>Vigente:</strong> {{vigente}}</p>
+                <p><strong>Descripción:</strong> {{descripcion}}</p>
+            </div>
+            <div class="actions">
+                <a href="/admin/planes/edit/{{id_plan}}" class="edit">✏️ Editar</a>
+                <form action="/admin/planes/delete" method="POST" onsubmit="return confirm('¿Eliminar plan de estudio?');">
+                    <input type="hidden" name="id_plan" value="{{id_plan}}">
+                    <button type="submit" class="delete">🗑 Eliminar</button>
+                </form>
+            </div>
+        </div>
+        {{/planes}}
+    </div>
+
+    {{^planes}}
+    <div class="empty-state">
+        No hay planes de estudio registrados aún. Presiona "Nuevo Plan" para comenzar.
+    </div>
+    {{/planes}}
+</div>
+</body>
+</html>
