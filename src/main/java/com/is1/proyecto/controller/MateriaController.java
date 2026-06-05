@@ -55,7 +55,7 @@ public class MateriaController {
             Integer.valueOf(req.queryParams("id_carrera"))
         );
 
-        res.redirect("materias");
+        res.redirect("/admin/materias");
 
         return null;
     }
@@ -161,7 +161,7 @@ public class MateriaController {
             )
         );
 
-        res.redirect("/materias");
+        res.redirect("/admin/materias");
 
         return null;
     }

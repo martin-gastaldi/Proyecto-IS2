@@ -1739,7 +1739,7 @@ public class AppIntegrationTest {
     void testCreateMateria() throws Exception {
 
         post(
-            "/admin/materias/new",
+            "/admin/materias/create",
             "nombreMateria=IS2" +
             "&anio=2" +
             "&cuatrimestre=1" +

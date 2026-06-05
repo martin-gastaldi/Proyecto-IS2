@@ -206,7 +206,7 @@ public class App {
         );
 
         post(
-            "/admin/materias/new",
+            "/admin/materias/create",
             MateriaController::crear
         );
 
@@ -227,7 +227,7 @@ public class App {
 
         // ELIMINAR
 
-        get(
+        post(
             "/admin/materias/delete/:id",
             MateriaController::eliminar
         );
