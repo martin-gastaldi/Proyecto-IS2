@@ -1,10 +1,12 @@
 package com.is1.proyecto.controller;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import com.is1.proyecto.dao.AdminDao;
 import com.is1.proyecto.models.Administrador;
 import com.is1.proyecto.models.Persona;
 import com.is1.proyecto.models.User;
@@ -15,8 +17,14 @@ import spark.Response;
 
 public class AdminController {
 
+    private static AdminDao adminDao = new AdminDao();
+
     public static ModelAndView dashboard(Request req,
                                          Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
 
         Map<String, Object> model = new HashMap<>();
 
@@ -29,6 +37,200 @@ public class AdminController {
             model,
             "admin_dashboard.mustache"
         );
+    }
+
+    public static ModelAndView manageCarreras(Request req,
+                                              Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("carreras", adminDao.obtenerCarreras());
+        model.put("successMessage", req.queryParams("message"));
+        model.put("errorMessage", req.queryParams("error"));
+
+        return new ModelAndView(
+            model,
+            "admin/admin_carrera_list.mustache"
+        );
+    }
+
+    public static ModelAndView createCarreraView(Request req,
+                                                 Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("formAction", "/admin/carreras/create");
+        model.put("isEdit", false);
+        model.put("successMessage", req.queryParams("message"));
+        model.put("errorMessage", req.queryParams("error"));
+
+        return new ModelAndView(
+            model,
+            "admin/admin_edit_carrera.mustache"
+        );
+    }
+
+    public static ModelAndView editCarreraView(Request req,
+                                               Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        Integer id = Integer.valueOf(req.params(":id"));
+
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("formAction", "/admin/carreras/edit");
+        model.put("isEdit", true);
+        model.put("carrera", adminDao.obtenerCarrera(id));
+        model.put("successMessage", req.queryParams("message"));
+        model.put("errorMessage", req.queryParams("error"));
+
+        return new ModelAndView(
+            model,
+            "admin/admin_edit_carrera.mustache"
+        );
+    }
+
+    public static ModelAndView createCarrera(Request req,
+                                             Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        try {
+            String validationError = validarCamposCarrera(req);
+            if (validationError != null) {
+                String encoded = "";
+                try {
+                    encoded = URLEncoder.encode(validationError, "UTF-8");
+                } catch (Exception ex) {
+                    encoded = validationError.replace(" ", "%20");
+                }
+                res.redirect("/admin/carreras/new?error=" + encoded);
+                return null;
+            }
+
+            adminDao.crearCarrera(req);
+            res.redirect("/admin/carreras?message=Carrera creada");
+        } catch (Exception e) {
+            res.redirect("/admin/carreras/new?error=" + e.getMessage());
+        }
+
+        return null;
+    }
+
+    public static ModelAndView editCarrera(Request req,
+                                           Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        try {
+            String validationError = validarCamposCarrera(req);
+            if (validationError != null) {
+                String id = req.queryParams("id_carrera");
+                String encoded = "";
+                try {
+                    encoded = URLEncoder.encode(validationError, "UTF-8");
+                } catch (Exception ex) {
+                    encoded = validationError.replace(" ", "%20");
+                }
+                res.redirect("/admin/carreras/edit/" + id + "?error=" + encoded);
+                return null;
+            }
+
+            adminDao.editarCarrera(req);
+            res.redirect("/admin/carreras?message=Carrera actualizada");
+        } catch (Exception e) {
+            String id = req.queryParams("id_carrera");
+            res.redirect("/admin/carreras/edit/" + id + "?error=" + e.getMessage());
+        }
+
+        return null;
+    }
+
+    public static ModelAndView deleteCarrera(Request req,
+                                             Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        try {
+            String idStr = req.queryParams("id_carrera");
+
+            if (idStr == null || idStr.isBlank()) {
+                throw new IllegalArgumentException("ID de carrera requerido");
+            }
+
+            Integer id = Integer.valueOf(idStr);
+
+            adminDao.eliminarCarrera(id);
+            res.redirect("/admin/carreras?message=Carrera eliminada");
+        } catch (Exception e) {
+            res.redirect("/admin/carreras?error=" + e.getMessage());
+        }
+
+        return null;
+    }
+
+    private static boolean validarAdmin(Request req,
+                                        Response res) {
+
+        Boolean isAdmin = req.session().attribute("isAdmin");
+
+        if (isAdmin == null || !isAdmin) {
+            res.redirect("/?error=Acceso denegado");
+            return false;
+        }
+
+        return true;
+    }
+
+    private static String validarCamposCarrera(Request req) {
+        String nombre = req.queryParams("nombreCarrera");
+        String facultad = req.queryParams("facultad");
+        String duracionStr = req.queryParams("duracion");
+        String titulo = req.queryParams("titulo");
+
+        if (nombre == null || nombre.isBlank()) {
+            return "Nombre de la carrera es requerido";
+        }
+
+        if (facultad == null || facultad.isBlank()) {
+            return "Facultad es requerida";
+        }
+
+        if (titulo == null || titulo.isBlank()) {
+            return "Título es requerido";
+        }
+
+        if (duracionStr == null || duracionStr.isBlank()) {
+            return "Duración es requerida";
+        }
+
+        try {
+            int dur = Integer.parseInt(duracionStr);
+            if (dur < 1) {
+                return "Duración debe ser al menos 1 año";
+            }
+        } catch (NumberFormatException e) {
+            return "Duración inválida";
+        }
+
+        return null;
     }
 
     public static ModelAndView createView(Request req,
