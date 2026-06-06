@@ -20,6 +20,8 @@ import com.is1.proyecto.models.Administrador;
 import com.is1.proyecto.models.Carrera;
 import com.is1.proyecto.models.Dictado;
 import com.is1.proyecto.models.Docente;
+import com.is1.proyecto.models.Estudiante;
+import com.is1.proyecto.models.Inscripcion;
 import com.is1.proyecto.models.Materia;
 import com.is1.proyecto.models.PlanEstudio;
 import com.is1.proyecto.models.Persona;
@@ -427,6 +429,156 @@ public class AppIntegrationTest {
         assertEquals(200, res.statusCode());
 
         assertEquals(200, res.statusCode());
+    }
+
+    @Test
+    void testAdminCreateEstudiante_fromUser_OK() throws Exception {
+
+        String cookie = loginAdmin();
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+        try {
+
+            Base.exec(
+                "INSERT INTO persona (dni, realName, surname, telefono, correo) " +
+                "VALUES (700, 'Luis', 'Lopez', '123', 'luis@test.com')"
+            );
+
+            Base.exec(
+                "INSERT INTO users (name, password, dni) " +
+                "VALUES ('luisuser', 'hash', 700)"
+            );
+
+            Base.exec(
+                "INSERT INTO plan_estudio (id_plan, id_carrera, anio, descripcion, vigente) " +
+                "VALUES (1, 1, 2024, 'Plan Test', 1)"
+            );
+
+        } finally {
+            Base.close();
+        }
+
+        HttpResponse<String> res = post(
+            "/admin/estudiantes/create",
+            "dni=700&legajo=2000&fecha_ingreso=2024-01-01&id_plan=1",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+        try {
+
+            Estudiante est = Estudiante.findFirst("dni = ?", 700);
+            Inscripcion ins = Inscripcion.findFirst("dniEstudiante = ?", 700);
+
+            assertNotNull(est);
+            assertNotNull(ins);
+
+            assertEquals(1, ins.getInteger("id_plan"));
+
+        } finally {
+            Base.close();
+        }
+    }
+
+    @Test
+    void testAdminAgregarInscripcion_OK() throws Exception {
+
+        String cookie = loginAdmin();
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+        try {
+
+            Base.exec(
+                "INSERT INTO persona (dni, realName, surname, telefono, correo) " +
+                "VALUES (800, 'Ana', 'Diaz', '123', 'ana@test.com')"
+            );
+
+            Base.exec(
+                "INSERT INTO estudiante (dni, legajo, fecha_ingreso) " +
+                "VALUES (800, 3000, '2024-01-01')"
+            );
+
+            Base.exec(
+                "INSERT INTO plan_estudio (id_plan, id_carrera, anio, descripcion, vigente) " +
+                "VALUES (2, 1, 2025, 'Plan B', 1)"
+            );
+
+        } finally {
+            Base.close();
+        }
+
+        HttpResponse<String> res = post(
+            "/admin/estudiantes/inscripcion",
+            "dni=800&id_plan=2&fecha_ingreso=2024-01-01",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+        try {
+
+            Inscripcion ins = Inscripcion.findFirst(
+                "dniEstudiante = ? AND id_plan = ?",
+                800,
+                2
+            );
+
+            assertNotNull(ins);
+            assertEquals("ACTIVA", ins.getString("situacion"));
+
+        } finally {
+            Base.close();
+        }
+    }
+
+    @Test
+    void testAdminAgregarInscripcion_DUPLICATE_FAIL() throws Exception {
+
+        String cookie = loginAdmin();
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+        try {
+
+            Base.exec(
+                "INSERT INTO persona (dni, realName, surname, telefono, correo) " +
+                "VALUES (900, 'Carlos', 'Ruiz', '123', 'carlos@test.com')"
+            );
+
+            Base.exec(
+                "INSERT INTO estudiante (dni, legajo, fecha_ingreso) " +
+                "VALUES (900, 4000, '2024-01-01')"
+            );
+
+            Base.exec(
+                "INSERT INTO plan_estudio (id_plan, id_carrera, anio, descripcion, vigente) " +
+                "VALUES (3, 1, 2025, 'Plan C', 1)"
+            );
+
+            Base.exec(
+                "INSERT INTO inscripcion (dniEstudiante, id_plan, fecha_ingreso, situacion) " +
+                "VALUES (900, 3, '2024-01-01', 'ACTIVA')"
+            );
+
+        } finally {
+            Base.close();
+        }
+
+        HttpResponse<String> res = post(
+            "/admin/estudiantes/inscripcion",
+            "dni=900&id_plan=3&fecha_ingreso=2024-01-01",
+            cookie
+        );
+
+        assertEquals(302, res.statusCode());
+
+        String location = res.headers()
+            .firstValue("Location")
+            .orElse("");
+
+        assertTrue(location.contains("error"));
     }
 
     // =========================================================

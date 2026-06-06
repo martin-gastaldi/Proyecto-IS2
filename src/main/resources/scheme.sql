@@ -93,13 +93,13 @@ CREATE TABLE plan_materia (
 --Relacion N..N
 CREATE TABLE inscripcion (
     dniEstudiante INTEGER,
-    id_carrera INTEGER,
+    id_plan INTEGER,
     fecha_ingreso TEXT,
-    situacion TEXT CHECK (situacion IN ('INGRESANTE','ACTIVA','FINALIZADA','ABANDONADA')), --En duda los check 
-    PRIMARY KEY (dniEstudiante, id_carrera),
+    situacion TEXT CHECK (situacion IN ('INGRESANTE','ACTIVA','FINALIZADA','ABANDONADA')),
+    PRIMARY KEY (dniEstudiante, id_plan),
     FOREIGN KEY (dniEstudiante) REFERENCES estudiante(dni)
         ON DELETE CASCADE,
-    FOREIGN KEY (id_carrera) REFERENCES carrera(id_carrera)
+    FOREIGN KEY (id_plan) REFERENCES plan_estudio(id_plan)
         ON DELETE CASCADE
 );
 --Relacion N..N

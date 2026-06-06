@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.nio.charset.StandardCharsets;
+
 import com.is1.proyecto.dao.AdminDao;
 import com.is1.proyecto.models.Administrador;
 import com.is1.proyecto.models.Persona;
@@ -571,4 +573,96 @@ public class AdminController {
 
     return null;
 }
+
+    public static ModelAndView createEstudianteView(Request req, Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        Map<String, Object> model =
+            new HashMap<>();
+
+        model.put(
+            "personas",
+            adminDao.obtenerPersonasNoEstudiantes()
+        );
+
+        model.put(
+            "planes",
+            adminDao.obtenerPlanesParaSelect()
+        );
+
+        model.put(
+            "estudiantes",
+            adminDao.obtenerEstudiantes()
+        );
+
+        model.put(
+            "successMessage",
+            req.queryParams("message")
+        );
+
+        model.put(
+            "errorMessage",
+            req.queryParams("error")
+        );
+
+        return new ModelAndView(
+            model,
+            "admin/admin_create_estudiante.mustache"
+        );
+    }
+
+    public static ModelAndView createEstudiante(Request req, Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        try {
+
+            adminDao.crearEstudiante(req);
+
+            res.redirect(
+                "/admin/estudiantes/new?message=Estudiante creado"
+            );
+
+        } catch (Exception e) {
+
+            res.redirect(
+                "/admin/estudiantes/new?error="
+                + e.getMessage()
+            );
+        }
+
+        return null;
+    }
+
+    public static ModelAndView agregarInscripcion(Request req, Response res) {
+
+        if (!validarAdmin(req, res)) {
+            return null;
+        }
+
+        try {
+
+            adminDao.agregarInscripcion(req);
+
+            res.redirect(
+                "/admin/estudiantes/new?message=Inscripcion agregada"
+            );
+
+        } catch (Exception e) {
+            res.redirect(
+                "/admin/estudiantes/new?error="
+                + URLEncoder.encode(
+                    e.getMessage(),
+                    StandardCharsets.UTF_8
+                )
+            );
+        }
+
+        return null;
+    }
 }

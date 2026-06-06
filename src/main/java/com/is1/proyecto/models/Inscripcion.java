@@ -14,12 +14,12 @@ public class Inscripcion extends Model{
         set("dniEstudiante", dniEstudiante);
     }
 
-    public Integer getIdCarrera(){
-        return getInteger("id_carrera");
+    public Integer getIdPlan() {
+        return getInteger("id_plan");
     }
 
-    public void setIdCarrera(Integer id_carrera){
-        set("id_carrera", id_carrera);
+    public void setIdPlan(Integer idPlan) {
+        set("id_plan", idPlan);
     }
 
     public String getFechaIngreso(){
