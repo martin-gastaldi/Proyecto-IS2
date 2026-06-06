@@ -3,6 +3,7 @@ package com.is1.proyecto.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.is1.proyecto.dao.AdminDao;
 import com.is1.proyecto.dao.MateriaDao;
 import com.is1.proyecto.models.Materia;
 
@@ -15,6 +16,9 @@ public class MateriaController {
     private static final MateriaDao materiaDao =
             new MateriaDao();
 
+    private static final AdminDao adminDao =
+            new AdminDao();
+
     public static ModelAndView listar(
             Request req,
             Response res) {
@@ -22,9 +26,44 @@ public class MateriaController {
         Map<String,Object> model =
                 new HashMap<>();
 
+        String carreraParam =
+        req.queryParams("carrera");
+
+        Integer selectedCarrera =
+                null;
+
+        if (carreraParam != null &&
+            !carreraParam.isBlank()) {
+
+            try {
+
+                selectedCarrera =
+                        Integer.valueOf(carreraParam);
+
+            } catch (NumberFormatException ignored) {
+
+                selectedCarrera = null;
+
+            }
+        }
+
         model.put(
             "materias",
-            materiaDao.obtenerMaterias()
+            materiaDao.obtenerMaterias(
+                selectedCarrera
+            )
+        );
+
+        model.put(
+            "carreras",
+            adminDao.obtenerCarreras(
+                selectedCarrera
+            )
+        );
+
+        model.put(
+            "selectedCarrera",
+            selectedCarrera
         );
 
         return new ModelAndView(
@@ -37,8 +76,14 @@ public class MateriaController {
             Request req,
             Response res) {
 
+        Map<String,Object> model = new HashMap<>();
+        model.put(
+            "planes",
+            adminDao.obtenerPlanes(null)
+        );
+
         return new ModelAndView(
-            new HashMap<>(),
+            model,
             "materia_new.mustache"
         );
     }
@@ -47,12 +92,20 @@ public class MateriaController {
             Request req,
             Response res) {
 
+        String idPlanStr = req.queryParams("id_plan");
+
+        if (idPlanStr == null || idPlanStr.isBlank()) {
+            throw new IllegalArgumentException("Plan de estudio es obligatorio");
+        }
+
+        Integer idPlan = Integer.valueOf(idPlanStr);
+
         materiaDao.crearMateria(
             req.queryParams("nombreMateria"),
             Integer.valueOf(req.queryParams("anio")),
             Integer.valueOf(req.queryParams("cuatrimestre")),
             Integer.valueOf(req.queryParams("carga_horaria")),
-            Integer.valueOf(req.queryParams("id_carrera"))
+            idPlan
         );
 
         res.redirect("/admin/materias");
