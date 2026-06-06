@@ -419,6 +419,31 @@ public class AppIntegrationTest {
     }
 
     @Test
+    void testCreateUser_creaPersonaYUser() throws Exception {
+
+        post(
+            "/user/new",
+            "name=testuser&password=1234&dni=123&realName=Juan&surname=Perez&correo=test@test.com"
+        );
+
+        Base.open(DB_DRIVER, DB_URL, "", "");
+        try {
+
+            Persona p = Persona.findFirst("dni = ?", 123);
+            User u = User.findFirst("name = ?", "testuser");
+
+            assertNotNull(p);
+            assertNotNull(u);
+
+            assertEquals("Juan", p.getString("realName"));
+            assertEquals("Perez", p.getString("surname"));
+
+        } finally {
+            Base.close();
+        }
+    }
+
+    @Test
     void testLogin_FAIL_wrongCredentials() throws Exception {
 
         HttpResponse<String> res = post(
