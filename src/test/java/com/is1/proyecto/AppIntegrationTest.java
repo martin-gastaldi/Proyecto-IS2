@@ -1982,13 +1982,31 @@ public class AppIntegrationTest {
     @Test
     void testCreateMateria() throws Exception {
 
+        Base.open(DB_DRIVER, DB_URL, "", "");
+
+        try {
+            Base.exec(
+                "INSERT INTO carrera " +
+                "(id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES " +
+                "(1, 'Ingenieria', 'FCEFyN', 5, 'Ingeniero')"
+            );
+
+            Base.exec(
+                "INSERT INTO plan_estudio " +
+                "(id_plan, anio, vigente, descripcion, id_carrera) VALUES " +
+                "(1, 2025, 1, 'Plan de prueba', 1)"
+            );
+        } finally {
+            Base.close();
+        }
+
         post(
             "/admin/materias/create",
             "nombreMateria=IS2" +
             "&anio=2" +
             "&cuatrimestre=1" +
             "&carga_horaria=96" +
-            "&id_carrera=1"
+            "&id_plan=1"
         );
 
         Base.open(DB_DRIVER, DB_URL, "", "");
@@ -2002,6 +2020,7 @@ public class AppIntegrationTest {
                 );
 
             assertNotNull(materia);
+            assertEquals(1, materia.getInteger("id_carrera"));
 
         } finally {
 

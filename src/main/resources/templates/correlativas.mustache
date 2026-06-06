@@ -6,111 +6,163 @@
 
 <style>
 
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
 body{
-    font-family:'Segoe UI',sans-serif;
-    background:linear-gradient(
-        135deg,
-        #667eea 0%,
-        #764ba2 100%
-    );
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
     min-height:100vh;
     padding:30px;
 }
 
 .container{
-    max-width:900px;
-    margin:auto;
+    max-width:800px;
+    margin:0 auto;
     background:white;
-    padding:30px;
     border-radius:12px;
-    box-shadow:0 10px 25px rgba(0,0,0,.2);
+    padding:30px;
+    box-shadow:0 20px 55px rgba(0,0,0,0.18);
 }
 
-h1{
-    color:#667eea;
-    margin-bottom:10px;
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:24px;
 }
 
-.subtitle{
+.header h1{
+    margin:0;
+    font-size:2rem;
+    color:#333;
+}
+
+.header p{
+    margin-top:6px;
     color:#666;
-    margin-bottom:25px;
+}
+
+.button{
+    display:inline-block;
+    padding:12px 18px;
+    border-radius:8px;
+    text-decoration:none;
+    color:white;
+    font-weight:600;
+}
+
+.button.secondary{
+    background:#6c757d;
 }
 
 table{
     width:100%;
     border-collapse:collapse;
-    margin-bottom:30px;
+    margin:24px 0;
+}
+
+thead{
+    background:#f8f9fc;
 }
 
 th{
-    background:#667eea;
-    color:white;
-}
-
-th,td{
-    padding:12px;
-    border-bottom:1px solid #ddd;
-}
-
-.btn{
-    border:none;
-    padding:8px 14px;
-    border-radius:6px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.btn-primary{
-    background:#667eea;
-    color:white;
-}
-
-.btn-danger{
-    background:#dc3545;
-    color:white;
-}
-
-.btn-secondary{
-    background:#e0e0e0;
+    text-align:left;
     color:#333;
-    text-decoration:none;
+    font-weight:600;
+}
+
+th,
+td{
+    padding:12px;
+    border-bottom:1px solid #e5e7eb;
+}
+
+.empty-row{
+    text-align:center;
+    color:#666;
+}
+
+.form-section{
+    margin-top:30px;
+}
+
+.form-section h2{
+    margin-bottom:16px;
+    color:#333;
+}
+
+.form-group{
+    margin-bottom:16px;
+}
+
+label{
+    display:block;
+    margin-bottom:6px;
+    color:#333;
+    font-weight:600;
 }
 
 select{
     width:100%;
-    padding:10px;
-    margin-bottom:10px;
-    border-radius:6px;
-    border:1px solid #ccc;
-}
-
-.card{
-    background:#f8f9ff;
-    padding:20px;
+    padding:10px 12px;
+    border:1px solid #cbd5e1;
     border-radius:8px;
+    box-sizing:border-box;
 }
 
-.actions{
-    margin-top:20px;
+.btn{
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+    border-radius:8px;
+    transition:.2s;
+}
+
+.btn:hover{
+    opacity:.95;
+}
+
+.btn-success{
+    width:100%;
+    padding:12px;
+    background:#1cc88a;
+    color:white;
+}
+
+.btn-delete{
+    padding:7px 12px;
+    background:#fd7e14;
+    color:white;
 }
 
 </style>
 </head>
+
 <body>
 
 <div class="container">
 
-    <h1>🔗 Correlativas</h1>
+    <div class="header">
+        <div>
+            <h1>Correlativas</h1>
+            <p>Materia: {{materia.nombreMateria}}</p>
+        </div>
 
-    <p class="subtitle">
-        Materia: <strong>{{materia.nombreMateria}}</strong>
-    </p>
+        <a href="/admin/materias" class="button secondary">
+            ← Volver
+        </a>
+    </div>
 
     <table>
 
         <thead>
             <tr>
-                <th>Materia Correlativa</th>
+                <th>Materia correlativa</th>
                 <th>Condición</th>
                 <th>Acción</th>
             </tr>
@@ -145,8 +197,8 @@ select{
 
                         <button
                             type="submit"
-                            class="btn btn-danger">
-                            🗑 Eliminar
+                            class="btn btn-delete">
+                            ➖ Eliminar
                         </button>
 
                     </form>
@@ -160,8 +212,8 @@ select{
         {{^correlativas}}
 
             <tr>
-                <td colspan="3">
-                    No existen correlativas cargadas.
+                <td colspan="3" class="empty-row">
+                    Sin correlativas cargadas
                 </td>
             </tr>
 
@@ -171,9 +223,9 @@ select{
 
     </table>
 
-    <div class="card">
+    <div class="form-section">
 
-        <h2>➕ Agregar correlativa</h2>
+        <h2>Agregar correlativa</h2>
 
         <form
             action="/admin/materias/correlativas/add"
@@ -184,47 +236,53 @@ select{
                 name="id_materia"
                 value="{{idMateria}}">
 
-            <select name="id_correlativa" required>
+            <div class="form-group">
 
-                {{#materiasDisponibles}}
+                <label>Materia</label>
 
-                <option value="{{id_materia}}">
-                    {{nombreMateria}}
-                </option>
+                <select name="id_correlativa" required>
 
-                {{/materiasDisponibles}}
+                    <option value="">
+                        Seleccionar materia
+                    </option>
 
-            </select>
+                    {{#materiasDisponibles}}
 
-            <select name="condicion">
+                    <option value="{{id_materia}}">
+                        {{nombreMateria}}
+                    </option>
 
-                <option value="REGULAR">
-                    REGULAR
-                </option>
+                    {{/materiasDisponibles}}
 
-                <option value="APROBADA">
-                    APROBADA
-                </option>
+                </select>
 
-            </select>
+            </div>
+
+            <div class="form-group">
+
+                <label>Condición</label>
+
+                <select name="condicion">
+
+                    <option value="REGULAR">
+                        REGULAR
+                    </option>
+
+                    <option value="APROBADA">
+                        APROBADA
+                    </option>
+
+                </select>
+
+            </div>
 
             <button
                 type="submit"
-                class="btn btn-primary">
+                class="btn btn-success">
                 Guardar correlativa
             </button>
 
         </form>
-
-    </div>
-
-    <div class="actions">
-
-        <a
-            href="/admin/materias"
-            class="btn btn-secondary">
-            ← Volver a materias
-        </a>
 
     </div>
 

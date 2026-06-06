@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.is1.proyecto.models.Carrera;
 import com.is1.proyecto.models.Correlatividad;
 import com.is1.proyecto.models.Materia;
+import com.is1.proyecto.models.PlanEstudio;
+import com.is1.proyecto.models.PlanMateria;
 
 public class MateriaDao {
 
@@ -58,12 +61,95 @@ public class MateriaDao {
         return materiasList;
     }
 
+    public List<Map<String,Object>> obtenerMaterias(Integer idCarrera) {
+
+        List<Map<String,Object>> materiasList =
+                new ArrayList<>();
+
+        List<Materia> materias;
+
+        if (idCarrera != null) {
+
+            materias = Materia.where(
+                    "id_carrera = ?",
+                    idCarrera
+            );
+
+        } else {
+
+            materias = Materia.findAll();
+
+        }
+
+        for (Materia materia : materias) {
+
+            Map<String,Object> data =
+                    new HashMap<>();
+
+            data.put(
+                "id_materia",
+                materia.getInteger("id_materia")
+            );
+
+            data.put(
+                "nombreMateria",
+                materia.getString("nombreMateria")
+            );
+
+            data.put(
+                "anio",
+                materia.getInteger("anio")
+            );
+
+            data.put(
+                "cuatrimestre",
+                materia.getInteger("cuatrimestre")
+            );
+
+            data.put(
+                "carga_horaria",
+                materia.getInteger("carga_horaria")
+            );
+
+            Integer carreraId = materia.getInteger("id_carrera");
+            data.put(
+                "id_carrera",
+                carreraId
+            );
+
+            Carrera carrera = Carrera.findById(carreraId);
+            data.put(
+                "nombreCarrera",
+                carrera != null ? carrera.getNombreCarrera() : "Sin carrera"
+            );
+
+            PlanMateria planMateria = PlanMateria.findFirst(
+                "id_materia = ?",
+                materia.getIdMateria()
+            );
+
+            if (planMateria != null) {
+                PlanEstudio plan = PlanEstudio.findById(planMateria.getIdPlan());
+                data.put(
+                    "planAnio",
+                    plan != null ? plan.getAnio() : null
+                );
+            } else {
+                data.put("planAnio", null);
+            }
+
+            materiasList.add(data);
+        }
+
+        return materiasList;
+    }
+
     public void crearMateria(
             String nombreMateria,
             Integer anio,
             Integer cuatrimestre,
             Integer cargaHoraria,
-            Integer idCarrera) {
+            Integer idPlan) {
 
         Materia materia = new Materia();
 
@@ -87,12 +173,19 @@ public class MateriaDao {
             cargaHoraria
         );
 
-        materia.set(
-            "id_carrera",
-            idCarrera
-        );
+        PlanEstudio plan = PlanEstudio.findById(idPlan);
+        if (plan == null) {
+            throw new IllegalArgumentException("Plan de estudio no encontrado");
+        }
+
+        materia.set("id_carrera", plan.getIdCarrera());
 
         materia.saveIt();
+
+        PlanMateria planMateria = new PlanMateria();
+        planMateria.set("id_plan", idPlan);
+        planMateria.set("id_materia", materia.getIdMateria());
+        planMateria.saveIt();
     }
 
     public Materia buscarPorId(

@@ -95,6 +95,7 @@ public class AdminDao {
             data.put("id_plan", plan.getIdPlanEstudio());
             data.put("anio", plan.getAnio());
             data.put("vigente", plan.getVigente() ? "Sí" : "No");
+            data.put("vigenteFlag", plan.getVigente());
             data.put("descripcion", plan.getDescripcion());
             data.put("id_carrera", plan.getIdCarrera());
             data.put("nombreCarrera", carrera != null ? carrera.getNombreCarrera() : "Sin carrera");
