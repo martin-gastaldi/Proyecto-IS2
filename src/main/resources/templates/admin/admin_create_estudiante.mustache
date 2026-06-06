@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestionar Estudiantes</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 26px;
+            box-shadow: 0 20px 55px rgba(0,0,0,0.18);
+        }
+
+        .header {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:24px;
+        }
+
+        .header h1 {
+            margin:0;
+            color:#333;
+        }
+
+        .button {
+            display:inline-block;
+            padding:12px 18px;
+            border-radius:8px;
+            text-decoration:none;
+            color:white;
+            font-weight:600;
+        }
+
+        .button.secondary {
+            background:#6c757d;
+        }
+
+        .section {
+            margin-top: 25px;
+            padding-top: 20px;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom:16px;
+        }
+
+        label {
+            display:block;
+            margin-bottom:8px;
+            color:#333;
+            font-weight:600;
+        }
+
+        input,
+        select {
+            width:100%;
+            padding:12px 14px;
+            border:1px solid #cbd5e1;
+            border-radius:10px;
+            box-sizing:border-box;
+        }
+
+        .form-footer {
+            display:flex;
+            justify-content:flex-end;
+            margin-top:20px;
+        }
+
+        button[type="submit"] {
+            padding:14px 18px;
+            border:none;
+            border-radius:10px;
+            background:#f6c23e;
+            color:#111;
+            font-weight:700;
+            cursor:pointer;
+        }
+
+        hr {
+            margin: 35px 0;
+            border: none;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .success-message {
+            background:#d4edda;
+            color:#155724;
+            padding:14px;
+            border-radius:10px;
+            margin-bottom:20px;
+        }
+
+        .error-message {
+            background:#f8d7da;
+            color:#721c24;
+            padding:14px;
+            border-radius:10px;
+            margin-bottom:20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Gestionar Estudiantes</h1>
+        <a href="/admin/panel" class="button secondary">
+            ← Volver
+        </a>
+    </div>
+
+    {{#successMessage}}
+    <div class="success-message">
+        {{successMessage}}
+    </div>
+    {{/successMessage}}
+
+    {{#errorMessage}}
+    <div class="error-message">
+        {{errorMessage}}
+    </div>
+    {{/errorMessage}}
+
+    <!-- CREAR ESTUDIANTE -->
+
+    <div class="section">
+
+        <h2>Crear Estudiante</h2>
+
+        <form action="/admin/estudiantes/create" method="POST">
+
+            <div class="form-group">
+                <label>Usuario</label>
+
+                <select name="dni" required>
+                    <option value="">
+                        Seleccione un usuario
+                    </option>
+
+                    {{#personas}}
+                    <option value="{{dni}}">
+                        {{nombreCompleto}}
+                    </option>
+                    {{/personas}}
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Legajo</label>
+
+                <input
+                    type="number"
+                    name="legajo"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label>Fecha de ingreso</label>
+
+                <input
+                    type="date"
+                    name="fecha_ingreso"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label>Plan de estudio</label>
+
+                <select name="id_plan" required>
+
+                    <option value="">
+                        Seleccione un plan
+                    </option>
+
+                    {{#planes}}
+                    <option value="{{id_plan}}">
+                        {{descripcion}}
+                    </option>
+                    {{/planes}}
+
+                </select>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit">
+                    Crear estudiante
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+    <hr>
+
+    <!-- AGREGAR INSCRIPCION -->
+
+    <div class="section">
+
+        <h2>Agregar Inscripción</h2>
+
+        <form action="/admin/estudiantes/inscripcion" method="POST">
+
+            <div class="form-group">
+                <label>Estudiante</label>
+
+                <select name="dni" required>
+
+                    <option value="">
+                        Seleccione un estudiante
+                    </option>
+
+                    {{#estudiantes}}
+                    <option value="{{dni}}">
+                        {{nombreCompleto}}
+                    </option>
+                    {{/estudiantes}}
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Plan de estudio</label>
+
+                <select name="id_plan" required>
+
+                    <option value="">
+                        Seleccione un plan
+                    </option>
+
+                    {{#planes}}
+                    <option value="{{id_plan}}">
+                        {{descripcion}}
+                    </option>
+                    {{/planes}}
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Fecha de ingreso</label>
+
+                <input
+                    type="date"
+                    name="fecha_ingreso"
+                    required>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit">
+                    Agregar inscripción
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
