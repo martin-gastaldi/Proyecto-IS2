@@ -7,61 +7,87 @@
     <style>
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(
-                135deg,
-                #667eea 0%,
-                #764ba2 100%
-            );
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0;
+            padding: 30px;
         }
 
         .container {
+            max-width: 650px;
+            margin: 0 auto;
             background: white;
-            padding: 40px;
-            border-radius: 10px;
-            width: 600px;
-            box-shadow: 0 10px 30px rgba(0,0,0,.2);
+            border-radius: 12px;
+            padding: 26px;
+            box-shadow: 0 20px 55px rgba(0,0,0,0.18);
         }
 
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
+        .header {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;
+            margin-bottom:24px;
+        }
+
+        .header h1 {
+            margin:0;
+            font-size:2rem;
+            color:#333;
+        }
+
+        .header p {
+            margin-top:6px;
+            color:#666;
+        }
+
+        .button {
+            display:inline-block;
+            padding:12px 18px;
+            border-radius:8px;
+            text-decoration:none;
+            color:white;
+            font-weight:600;
+        }
+
+        .button.secondary {
+            background:#6c757d;
+        }
+
+        .form-group {
+            margin-bottom:16px;
+        }
+
+        label {
+            display:block;
+            margin-bottom:8px;
+            color:#333;
+            font-weight:600;
         }
 
         input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+            width:100%;
+            padding:12px 14px;
+            border:1px solid #cbd5e1;
+            border-radius:10px;
+            box-sizing:border-box;
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            background: #667eea;
-            color: white;
-            font-size: 16px;
+        input[disabled] {
+            background:#f8f9fa;
+            color:#6c757d;
+            cursor:not-allowed;
         }
 
-        button:hover {
-            opacity: .9;
-        }
-
-        .volver {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            text-decoration: none;
-            color: #667eea;
+        button[type="submit"] {
+            padding:14px 18px;
+            border:none;
+            border-radius:10px;
+            background:#f6c23e;
+            color:#111;
+            font-weight:700;
+            cursor:pointer;
         }
 
     </style>
@@ -70,7 +96,16 @@
 
 <div class="container">
 
-    <h1>✏️ Editar Materia</h1>
+    <div class="header">
+        <div>
+            <h1>Editar Materia</h1>
+            <p>ID: {{materia.id_materia}}</p>
+        </div>
+
+        <a href="/admin/materias" class="button secondary">
+            ← Volver
+        </a>
+    </div>
 
     <form action="/admin/materias/edit" method="POST">
 
@@ -80,46 +115,59 @@
             value="{{materia.id_materia}}">
 
         <input
-            type="text"
-            name="nombreMateria"
-            value="{{materia.nombreMateria}}"
-            placeholder="Nombre Materia">
-
-        <input
-            type="number"
-            name="anio"
-            value="{{materia.anio}}"
-            placeholder="Año">
-
-        <input
-            type="number"
-            name="cuatrimestre"
-            value="{{materia.cuatrimestre}}"
-            placeholder="Cuatrimestre">
-
-        <input
-            type="number"
-            name="carga_horaria"
-            value="{{materia.carga_horaria}}"
-            placeholder="Carga Horaria">
-
-        <input
-            type="number"
+            type="hidden"
             name="id_carrera"
-            value="{{materia.id_carrera}}"
-            placeholder="ID Carrera">
+            value="{{materia.id_carrera}}">
+
+        <div class="form-group">
+            <label>Nombre de la materia</label>
+            <input
+                type="text"
+                name="nombreMateria"
+                value="{{materia.nombreMateria}}"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label>Año</label>
+            <input
+                type="number"
+                name="anio"
+                value="{{materia.anio}}"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label>Cuatrimestre</label>
+            <input
+                type="number"
+                name="cuatrimestre"
+                value="{{materia.cuatrimestre}}"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label>Carga horaria</label>
+            <input
+                type="number"
+                name="carga_horaria"
+                value="{{materia.carga_horaria}}"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label>ID Carrera</label>
+            <input
+                type="number"
+                value="{{materia.id_carrera}}"
+                disabled>
+        </div>
 
         <button type="submit">
-            Guardar Cambios
+            Guardar cambios
         </button>
 
     </form>
-
-    <a
-        href="/admin/materias"
-        class="volver">
-        ← Volver
-    </a>
 
 </div>
 
