@@ -591,20 +591,17 @@ public class AppIntegrationTest {
     @Test
     void testCreateDocente_OK() throws Exception {
 
-        Base.open(DB_DRIVER, DB_URL, "", "");
-
-        try {
-
-            Base.exec(" INSERT INTO carrera (id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES (1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas')");
-
-        } finally {
-
-            Base.close();
-        }
-
         HttpResponse<String> res = post(
             "/get_docente",
-            "dni=123&realName=Juan&surname=Perez&nombreMateria=IS1&id_carrera=1&departament=CS&correo=test@test.com&telefono=358000000"
+            "dni=123" +
+            "&cuil=20-12345678-3" +
+            "&realName=Juan" +
+            "&surname=Perez" +
+            "&username=jperez" +
+            "&password=123456" +
+            "&correo=test@test.com" +
+            "&telefono=358000000" +
+            "&departament=CS"
         );
 
         assertEquals(302, res.statusCode());
@@ -613,25 +610,62 @@ public class AppIntegrationTest {
             .firstValue("Location")
             .orElse("");
 
-        assertTrue(location.contains("Docente cargado exitosamente"));
+        assertTrue(
+            location.contains(
+                "Docente cargado exitosamente"
+            )
+        );
 
         Base.open(DB_DRIVER, DB_URL, "", "");
 
         try {
 
-            Persona persona = Persona.findFirst("dni = ?", 123);
-            Docente docente = Docente.findFirst("dni = ?", 123);
-            Materia materia = Materia.findFirst("nombreMateria = ?", "IS1");
-            Dictado dictado = Dictado.findFirst("dniDocente = ?", 123);
+            Persona persona =
+                Persona.findFirst(
+                    "dni = ?",
+                    123
+                );
+
+            Docente docente =
+                Docente.findFirst(
+                    "dni = ?",
+                    123
+                );
+
+            User user =
+                User.findFirst(
+                    "dni = ?",
+                    123
+                );
 
             assertNotNull(persona);
             assertNotNull(docente);
-            assertNotNull(materia);
-            assertNotNull(dictado);
+            assertNotNull(user);
+
+            assertEquals(
+                "Juan",
+                persona.getString("realName")
+            );
+
+            assertEquals(
+                "Perez",
+                persona.getString("surname")
+            );
+
+            assertEquals(
+                "CS",
+                docente.getString("departament")
+            );
+
+            assertEquals(
+                "jperez",
+                user.getString("name")
+            );
 
         } finally {
 
             Base.close();
+
         }
     }
 
@@ -657,32 +691,38 @@ public class AppIntegrationTest {
     @Test
     void testCreateDocente_duplicateDni() throws Exception {
 
-        Base.open(DB_DRIVER, DB_URL, "", "");
-
-        try {
-
-            Base.exec("INSERT INTO carrera (id_carrera, nombreCarrera, facultad, duracion, titulo) VALUES (1, 'Ingenieria en Sistemas', 'FCEFyN', 5, 'Ing. en Sistemas') ");
-
-        } finally {
-
-            Base.close();
-        }
-
         post(
             "/get_docente",
-            "dni=123&realName=Juan&surname=Perez&nombreMateria=IS1&id_carrera=1&departament=CS&correo=test@test.com&telefono=358000000"
+            "dni=123" +
+            "&cuil=20-12345678-3" +
+            "&realName=Juan" +
+            "&surname=Perez" +
+            "&username=jperez" +
+            "&password=123456" +
+            "&departament=CS" +
+            "&correo=test@test.com" +
+            "&telefono=358000000"
         );
 
         post(
             "/get_docente",
-            "dni=123&realName=Juan&surname=Perez&nombreMateria=IS2&id_carrera=1&departament=CS&correo=test@test.com&telefono=358000000"
+            "dni=123" +
+            "&cuil=20-12345678-3" +
+            "&realName=Juan" +
+            "&surname=Perez" +
+            "&username=jperez2" +
+            "&password=123456" +
+            "&departament=CS" +
+            "&correo=test@test.com" +
+            "&telefono=358000000"
         );
 
         Base.open(DB_DRIVER, DB_URL, "", "");
 
         try {
 
-            long docentes = Docente.find("dni = ?", 123).size();
+            long docentes =
+                Docente.find("dni = ?", 123).size();
 
             assertEquals(1, docentes);
 
