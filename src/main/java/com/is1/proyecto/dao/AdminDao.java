@@ -7,6 +7,9 @@ import java.util.Map;
 
 import com.is1.proyecto.models.Carrera;
 import com.is1.proyecto.models.PlanEstudio;
+import com.is1.proyecto.models.Estudiante;
+import com.is1.proyecto.models.Inscripcion;
+import com.is1.proyecto.models.Persona;
 
 import spark.Request;
 
@@ -281,5 +284,303 @@ public class AdminDao {
         }
 
         carrera.delete();
+    }
+
+    public void crearEstudiante(Request req) {
+
+        Integer dni =
+            Integer.valueOf(
+                req.queryParams("dni")
+            );
+
+        Integer legajo =
+            Integer.valueOf(
+                req.queryParams("legajo")
+            );
+
+        String fechaIngreso =
+            req.queryParams("fecha_ingreso");
+
+        Integer idPlan =
+            Integer.valueOf(
+                req.queryParams("id_plan")
+            );
+
+        Persona persona =
+            Persona.findFirst(
+                "dni = ?",
+                dni
+            );
+
+        if (persona == null) {
+            throw new IllegalArgumentException(
+                "La persona no existe"
+            );
+        }
+
+        Estudiante existente =
+            Estudiante.findFirst(
+                "dni = ?",
+                dni
+            );
+
+        if (existente != null) {
+            throw new IllegalArgumentException(
+                "Ya existe un estudiante con ese DNI"
+            );
+        }
+
+        PlanEstudio plan =
+            PlanEstudio.findFirst(
+                "id_plan = ?",
+                idPlan
+            );
+
+        if (plan == null) {
+            throw new IllegalArgumentException(
+                "Plan inexistente"
+            );
+        }
+
+        Estudiante estudiante =
+            new Estudiante();
+
+        estudiante.setDni(dni);
+        estudiante.setLegajo(legajo);
+        estudiante.setFechaIngreso(fechaIngreso);
+
+        estudiante.saveIt();
+
+        Inscripcion inscripcion =
+            new Inscripcion();
+
+        inscripcion.setDniEstudiante(dni);
+        inscripcion.setIdPlan(idPlan);
+        inscripcion.setFechaIngreso(fechaIngreso);
+        inscripcion.setSituacion("INGRESANTE");
+
+        inscripcion.saveIt();
+    }
+
+    public List<Map<String, Object>> obtenerPersonasNoEstudiantes() {
+
+        List<Map<String, Object>> personas = new ArrayList<>();
+
+        List<Persona> lista = Persona.findBySQL(
+            "SELECT p.* " +
+            "FROM persona p " +
+            "JOIN users u ON u.dni = p.dni " +
+            "LEFT JOIN estudiante e ON e.dni = p.dni " +
+            "LEFT JOIN docente d ON d.dni = p.dni " +
+            "LEFT JOIN administrador a ON a.dni = p.dni " +
+            "WHERE e.dni IS NULL " +
+            "AND d.dni IS NULL " +
+            "AND a.dni IS NULL"
+        );
+
+        for (Persona persona : lista) {
+
+            Map<String, Object> data = new HashMap<>();
+
+            data.put("dni", persona.getInteger("dni"));
+
+            data.put(
+                "nombreCompleto",
+                persona.getString("surname")
+                + ", "
+                + persona.getString("realName")
+                + " (" + persona.getInteger("dni") + ")"
+            );
+
+            personas.add(data);
+        }
+
+        return personas;
+    }
+
+    public List<Map<String, Object>> obtenerPlanesParaSelect() {
+
+        List<Map<String, Object>> planes = new ArrayList<>();
+
+        List<PlanEstudio> lista = PlanEstudio.findAll();
+
+        for (PlanEstudio plan : lista) {
+
+            Carrera carrera = Carrera.findFirst(
+                "id_carrera = ?",
+                plan.getIdCarrera()
+            );
+
+            Map<String, Object> data = new HashMap<>();
+
+            data.put(
+                "id_plan",
+                plan.getIdPlanEstudio()
+            );
+
+            data.put(
+                "descripcion",
+                (carrera != null
+                    ? carrera.getNombreCarrera()
+                    : "Sin carrera")
+                + " (Año "
+                + plan.getAnio()
+                + ")"
+            );
+
+            planes.add(data);
+        }
+
+        return planes;
+    }
+
+    public List<Map<String, Object>> obtenerEstudiantes() {
+
+        List<Map<String, Object>> estudiantes = new ArrayList<>();
+
+        List<Estudiante> lista = Estudiante.findAll();
+
+        for (Estudiante estudiante : lista) {
+
+            Persona persona =
+                Persona.findFirst(
+                    "dni = ?",
+                    estudiante.getDni()
+                );
+
+            if (persona != null) {
+
+                Map<String, Object> data =
+                    new HashMap<>();
+
+                data.put(
+                    "dni",
+                    estudiante.getDni()
+                );
+
+                data.put(
+                    "nombreCompleto",
+                    persona.getString("surname")
+                    + ", "
+                    + persona.getString("realName")
+                    + " (" + estudiante.getDni() + ")"
+                );
+
+                estudiantes.add(data);
+            }
+        }
+
+        return estudiantes;
+    }
+
+    public void agregarInscripcion(Request req) {
+
+        Integer dni =
+            Integer.valueOf(
+                req.queryParams("dni")
+            );
+
+        Integer idPlan =
+            Integer.valueOf(
+                req.queryParams("id_plan")
+            );
+
+        String fechaIngreso =
+            req.queryParams(
+                "fecha_ingreso"
+            );
+
+        Estudiante estudiante =
+            Estudiante.findFirst(
+                "dni = ?",
+                dni
+            );
+
+        if (estudiante == null) {
+
+            throw new IllegalArgumentException(
+                "El estudiante no existe"
+            );
+        }
+
+        PlanEstudio plan =
+            PlanEstudio.findFirst(
+                "id_plan = ?",
+                idPlan
+            );
+
+        if (plan == null) {
+
+            throw new IllegalArgumentException(
+                "Plan inexistente"
+            );
+        }
+
+        Inscripcion existente =
+            Inscripcion.findFirst(
+                "dniEstudiante = ? AND id_plan = ?",
+                dni,
+                idPlan
+            );
+
+        if (existente != null) {
+            throw new IllegalArgumentException(
+                "El estudiante ya está inscripto en ese plan"
+            );
+        }
+
+        Inscripcion inscripcion =
+            new Inscripcion();
+
+        inscripcion.setDniEstudiante(dni);
+        inscripcion.setIdPlan(idPlan);
+        inscripcion.setFechaIngreso(fechaIngreso);
+        inscripcion.setSituacion("ACTIVA");
+
+        inscripcion.saveIt();
+    }
+
+    public List<Map<String, Object>> obtenerPlanesDisponibles(Integer dni) {
+
+        List<Map<String, Object>> planes = new ArrayList<>();
+
+        List<PlanEstudio> lista = PlanEstudio.findBySQL(
+            "SELECT * " +
+            "FROM plan_estudio p " +
+            "WHERE p.id_plan NOT IN (" +
+            "   SELECT i.id_plan " +
+            "   FROM inscripcion i " +
+            "   WHERE i.dniEstudiante = ?" +
+            ")",
+            dni
+        );
+
+        for (PlanEstudio plan : lista) {
+
+            Carrera carrera =
+                Carrera.findFirst(
+                    "id_carrera = ?",
+                    plan.getIdCarrera()
+                );
+
+            Map<String, Object> data = new HashMap<>();
+
+            data.put(
+                "id_plan",
+                plan.getIdPlanEstudio()
+            );
+
+            data.put(
+                "descripcion",
+                carrera.getNombreCarrera()
+                + " (Año "
+                + plan.getAnio()
+                + ")"
+            );
+
+            planes.add(data);
+        }
+
+        return planes;
     }
 }

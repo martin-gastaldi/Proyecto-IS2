@@ -234,6 +234,22 @@ public class App {
             MateriaController::crear
         );
 
+        get(
+            "/admin/estudiantes/new",
+            AdminController::createEstudianteView,
+            engine
+        );
+
+        post(
+            "/admin/estudiantes/create",
+            AdminController::createEstudiante
+        );
+
+        post(
+            "/admin/estudiantes/inscripcion",
+            AdminController::agregarInscripcion
+        );
+
         // EDITAR
 
         get(
