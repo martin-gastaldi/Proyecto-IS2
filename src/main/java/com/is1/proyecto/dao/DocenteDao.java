@@ -23,10 +23,10 @@ public class DocenteDao {
     public void crearDocente(Request req) {
 
     String dniStr = req.queryParams("dni");
+    String cuil = req.queryParams("cuil");
     String realName = req.queryParams("realName");
     String surname = req.queryParams("surname");
     String departament = req.queryParams("departament");
-    String nombreMateria = req.queryParams("nombreMateria");
     String correo = req.queryParams("correo");
     String telefono = req.queryParams("telefono");
     String username = req.queryParams("username");
@@ -34,12 +34,15 @@ public class DocenteDao {
 
     if (
         dniStr == null || dniStr.isBlank() ||
+        cuil == null || cuil.isBlank() ||
         realName == null || realName.isBlank() ||
         surname == null || surname.isBlank() ||
         departament == null || departament.isBlank() ||
-        nombreMateria == null || nombreMateria.isBlank()
+        correo == null || correo.isBlank() ||
+        telefono == null || telefono.isBlank() ||
+        username == null || username.isBlank() ||
+        password == null || password.isBlank()
     ) {
-
         throw new IllegalArgumentException(
             "Todos los campos son obligatorios."
         );
@@ -81,84 +84,20 @@ public class DocenteDao {
 
     if (docenteExists) {
         Base.exec(
-            "UPDATE docente SET departament = ? WHERE dni = ?",
+            "UPDATE docente SET cuil = ?, departament = ? WHERE dni = ?",
+            cuil,
             departament,
             dni
         );
     } else {
         Base.exec(
-            "INSERT INTO docente (dni, departament) VALUES (?, ?)",
+            "INSERT INTO docente (dni, cuil, departament) VALUES (?, ?, ?)",
             dni,
+            cuil,
             departament
         );
     }
 
-    Materia materia = Materia.findFirst(
-            "nombreMateria = ?",
-            nombreMateria
-    );
-
-    if (materia == null) {
-
-        materia = new Materia();
-
-       materia.set("nombreMateria", nombreMateria);
-
-        materia.set("anio", 1);
-
-        materia.set("cuatrimestre", 1);
-
-        materia.set("carga_horaria", 64);
-
-        String idCarreraStr =
-                req.queryParams("id_carrera");
-
-        if (idCarreraStr != null
-                && !idCarreraStr.isEmpty()) {
-
-            materia.set(
-                "id_carrera",
-                Integer.valueOf(idCarreraStr)
-            );
-        }
-        System.out.println(
-            "Materia ID: " +
-            materia.getInteger("id_materia")
-        );
-
-        materia.saveIt();
-            System.out.println(
-            "Materia creada: " +
-            materia.toString()
-        );
-    }
-
-    Integer idMateria = materia.getInteger("id_materia");
-
-    System.out.println("ID materia: " + idMateria);
-
-    Dictado dictado = Dictado.findFirst(
-            "dniDocente = ? AND id_materia = ?",
-            dni,
-            idMateria
-    );
-
-    if (dictado == null) {
-
-        dictado = new Dictado();
-
-        dictado.set("dniDocente", dni);
-
-        dictado.set("id_materia", idMateria);
-
-        dictado.set("cargo", "TITULAR");
-
-        dictado.set("dedicacion", "SIMPLE");
-
-        dictado.set("fechaInicio", "2024-01-01");
-
-        dictado.saveIt();
-    }
     if (
         username != null && !username.isBlank() &&
         password != null && !password.isBlank()

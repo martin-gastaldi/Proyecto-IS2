@@ -5,332 +5,410 @@
     <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
     <title>Crear Administrador - Sistema Académico</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+    }
+
+    body{
+        font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+        background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+        min-height:100vh;
+        padding:30px;
+    }
+
+    .container{
+        max-width:700px;
+        margin:0 auto;
+        background:white;
+        border-radius:12px;
+        padding:26px;
+        box-shadow:0 20px 55px rgba(0,0,0,0.18);
+    }
+
+    .header{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+        margin-bottom:24px;
+    }
+
+    .header h1{
+        margin:0;
+        font-size:2rem;
+        color:#333;
+    }
+
+    .header p{
+        margin-top:4px;
+        color:#666;
+    }
+
+    .button{
+        display:inline-block;
+        padding:12px 18px;
+        border-radius:8px;
+        text-decoration:none;
+        color:white;
+        font-weight:600;
+    }
+
+    .button.secondary{
+        background:#6c757d;
+    }
+
+    .alert{
+        padding:12px;
+        border-radius:10px;
+        margin-bottom:20px;
+    }
+
+    .alert-success{
+        background:#d4edda;
+        border:1px solid #c3e6cb;
+        color:#155724;
+    }
+
+    .alert-error{
+        background:#f8d7da;
+        border:1px solid #f5c6cb;
+        color:#721c24;
+    }
+
+    .form-group{
+        margin-bottom:16px;
+    }
+
+    .form-row{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:16px;
+    }
+
+    label{
+        display:block;
+        margin-bottom:8px;
+        color:#333;
+        font-weight:600;
+    }
+
+    input{
+        width:100%;
+        padding:12px 14px;
+        border:1px solid #cbd5e1;
+        border-radius:10px;
+        font-size:14px;
+        transition:.2s;
+    }
+
+    input:focus{
+        outline:none;
+        border-color:#667eea;
+        box-shadow:0 0 0 3px rgba(102,126,234,.15);
+    }
+
+    input[type="password"]{
+        font-family:'Courier New',monospace;
+        letter-spacing:1px;
+    }
+
+    .password-info{
+        font-size:.85rem;
+        color:#666;
+        margin-top:6px;
+    }
+
+    .required{
+        color:#dc3545;
+        font-weight:bold;
+    }
+
+    .form-footer{
+        display:flex;
+        justify-content:flex-end;
+        margin-top:20px;
+    }
+
+    button[type="submit"]{
+        padding:14px 18px;
+        border:none;
+        border-radius:10px;
+        background:#f6c23e;
+        color:#111;
+        font-weight:700;
+        cursor:pointer;
+        transition:.2s;
+    }
+
+    button[type="submit"]:hover{
+        opacity:.9;
+        transform:translateY(-1px);
+    }
+
+    @media (max-width: 768px){
+
+        .form-row{
+            grid-template-columns:1fr;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        .header{
+            flex-direction:column;
+            align-items:flex-start;
         }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            padding: 40px;
-        }
+    }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 20px;
-        }
+</style>
+<div class="container">
 
-        .header h1 {
-            color: #333;
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
+    <div class="header">
 
-        .header p {
-            color: #666;
-            font-size: 0.95em;
-        }
-
-        .admin-info {
-            background: #f0f4ff;
-            padding: 12px 15px;
-            border-radius: 5px;
-            margin-bottom: 25px;
-            border-left: 4px solid #667eea;
-            font-size: 0.9em;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            color: #721c24;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-            font-size: 0.95em;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1em;
-            font-family: inherit;
-            transition: all 0.3s ease;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            background: #f9faff;
-        }
-
-        input[type="password"] {
-            font-family: 'Courier New', monospace;
-            letter-spacing: 1px;
-        }
-
-        .password-info {
-            font-size: 0.85em;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1em;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-            border: 1px solid #ddd;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: #667eea;
-            text-decoration: none;
-            font-size: 0.95em;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
-        .required {
-            color: #f44336;
-            font-weight: bold;
-        }
-
-        .form-section {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .form-section:last-of-type {
-            border-bottom: none;
-        }
-
-        .section-title {
-            color: #667eea;
-            font-size: 0.95em;
-            font-weight: 600;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-    </style>
-</head>
-<body>
-    <div class = "container">
-        <div class = "header">
+        <div>
             <h1>👤 Crear Administrador</h1>
             <p>Añadir un nuevo usuario administrador al sistema</p>
         </div>
 
-        <div class = "admin-info">
-            <strong>Creado por:</strong> {{adminUsername}}
-        </div>
+        <a href="/admin/panel" class="button secondary">
+            ← Volver
+        </a>
 
-        {{#successMessage}}
-        <div class = "alert alert-success">
-            ✓ {{successMessage}}
-        </div>
-        {{/successMessage}}
-
-        {{#errorMessage}}
-        <div class = "alert alert-error">
-            ✗ {{errorMessage}}
-        </div>
-        {{/errorMessage}}
-
-        <form method = "POST" action = "/admin/create">
-            <!-- Sección de Credenciales -->
-            <div class = "form-section">
-                <div class = "section-title">Credenciales de Acceso</div>
-
-                <div class = "form-group">
-                    <label for = "username">Nombre de Usuario <span class = "required">*</span></label>
-                    <input type = "text" id = "username" name = "username" required placeholder = "ej: admin_secundario"
-                           pattern = "[a-zA-Z0-9_]+" title = "Solo letras, números y guión bajo">
-                </div>
-
-                <div class = "form-group">
-                    <label for = "password">Contraseña <span class = "required">*</span></label>
-                    <input type = "password" id = "password" name = "password" required placeholder = "Mínimo 6 caracteres"
-                           minlength = "6">
-                    <div class = "password-info">La contraseña debe contener al menos 6 caracteres</div>
-                </div>
-
-                <div class = "form-group">
-                    <label for = "passwordConfirm">Confirmar Contraseña <span class="required">*</span></label>
-                    <input type = "password" id = "passwordConfirm" name = "passwordConfirm" required 
-                           placeholder = "Repite la contraseña" minlength = "6">
-                </div>
-            </div>
-
-            <!-- Sección de Datos Personales -->
-            <div class = "form-section">
-                <div class = "section-title">Datos Personales</div>
-
-                <div class = "form-group">
-                    <label for = "dni">DNI <span class = "required">*</span></label>
-                    <input type = "number" id = "dni" name = "dni" required placeholder = "ej: 12345678"
-                           min = "1000000" max = "99999999">
-                </div>
-
-                <div class = "form-row">
-                    <div class = "form-group">
-                        <label for = "realName">Nombre <span class = "required">*</span></label>
-                        <input type = "text" id = "realName" name = "realName" required placeholder = "ej: Juan">
-                    </div>
-
-                    <div class = "form-group">
-                        <label for = "surname">Apellido <span class = "required">*</span></label>
-                        <input type = "text" id = "surname" name = "surname" required placeholder = "ej: García">
-                    </div>
-                </div>
-
-                <div class = "form-group">
-                    <label for = "correo">Correo Electrónico <span class = "required">*</span></label>
-                    <input type = "email" id = "correo" name = "correo" required placeholder = "ej: admin@universidad.edu.ar">
-                </div>
-
-                <div class = "form-group">
-                    <label for = "telefono">Teléfono <span class = "required">*</span></label>
-                    <input type = "tel" id = "telefono" name = "telefono" required placeholder = "ej: 011-1234-5678">
-                </div>
-            </div>
-
-            <!-- Botones de Acción -->
-            <div class = "actions">
-                <button type = "submit" class = "btn btn-primary">Crear Administrador</button>
-                <a href = "/admin/panel" class = "btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
-
-        <a href = "/admin/panel" class = "back-link">← Volver al Panel de Administración</a>
     </div>
 
-    <script>
-        // Validar que las contraseñas coincidan en tiempo real.
-        document.getElementById ('passwordConfirm').addEventListener ('change', function () {
-            const password = document.getElementById ('password').value;
+    {{#successMessage}}
+    <div class="alert alert-success">
+        ✓ {{successMessage}}
+    </div>
+    {{/successMessage}}
+
+    {{#errorMessage}}
+    <div class="alert alert-error">
+        ✗ {{errorMessage}}
+    </div>
+    {{/errorMessage}}
+
+    <form method="POST" action="/admin/create">
+
+        <div class="form-group">
+            <label for="username">
+                Nombre de Usuario
+                <span class="required">*</span>
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                name="username"
+                required
+                placeholder="ej: admin_secundario"
+                pattern="[a-zA-Z0-9_]+"
+                title="Solo letras, números y guión bajo">
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+                <label for="password">
+                    Contraseña
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    minlength="6"
+                    placeholder="Mínimo 6 caracteres">
+
+                <div class="password-info">
+                    La contraseña debe contener al menos 6 caracteres
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="passwordConfirm">
+                    Confirmar Contraseña
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="password"
+                    id="passwordConfirm"
+                    name="passwordConfirm"
+                    required
+                    minlength="6"
+                    placeholder="Repite la contraseña">
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label for="dni">
+                DNI
+                <span class="required">*</span>
+            </label>
+
+            <input
+                type="number"
+                id="dni"
+                name="dni"
+                required
+                placeholder="ej: 12345678"
+                min="1000000"
+                max="99999999">
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+                <label for="realName">
+                    Nombre
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="realName"
+                    name="realName"
+                    required
+                    placeholder="ej: Juan">
+            </div>
+
+            <div class="form-group">
+                <label for="surname">
+                    Apellido
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="surname"
+                    name="surname"
+                    required
+                    placeholder="ej: García">
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label for="correo">
+                Correo Electrónico
+                <span class="required">*</span>
+            </label>
+
+            <input
+                type="email"
+                id="correo"
+                name="correo"
+                required
+                placeholder="ej: admin@universidad.edu.ar">
+        </div>
+
+        <div class="form-group">
+            <label for="telefono">
+                Teléfono
+                <span class="required">*</span>
+            </label>
+
+            <input
+                type="tel"
+                id="telefono"
+                name="telefono"
+                required
+                placeholder="ej: 011-1234-5678">
+        </div>
+
+        <div class="form-footer">
+
+            <button type="submit">
+                Crear Administrador
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+
+    document.getElementById('passwordConfirm')
+        .addEventListener('change', function () {
+
+            const password =
+                document.getElementById('password').value;
+
             const passwordConfirm = this.value;
-            
-            if (password && passwordConfirm && password !== passwordConfirm) {
-                this.setCustomValidity ('Las contraseñas no coinciden');
+
+            if (
+                password &&
+                passwordConfirm &&
+                password !== passwordConfirm
+            ) {
+
+                this.setCustomValidity(
+                    'Las contraseñas no coinciden'
+                );
+
             } else {
-                this.setCustomValidity ('');
+
+                this.setCustomValidity('');
+
             }
         });
 
-        // Validar DNI antes de enviar.
-        document.querySelector ('form').addEventListener ('submit', function (e) {
-            const dni = document.getElementById ('dni').value;
+    document.querySelector('form')
+        .addEventListener('submit', function (e) {
+
+            const dni =
+                document.getElementById('dni').value;
+
             const dniPattern = /^\d{7,8}$/;
-            
-            if (!dniPattern.test (dni)) {
-                e.preventDefault ();
-                alert ('Por favor, ingresa un DNI válido (7-8 dígitos)');
+
+            if (!dniPattern.test(dni)) {
+
+                e.preventDefault();
+
+                alert(
+                    'Por favor, ingresa un DNI válido (7-8 dígitos)'
+                );
+
                 return false;
             }
 
-            const password = document.getElementById ('password').value;
-            const passwordConfirm = document.getElementById ('passwordConfirm').value;
-            
+            const password =
+                document.getElementById('password').value;
+
+            const passwordConfirm =
+                document.getElementById('passwordConfirm').value;
+
             if (password !== passwordConfirm) {
-                e.preventDefault ();
-                alert ('Las contraseñas no coinciden');
+
+                e.preventDefault();
+
+                alert(
+                    'Las contraseñas no coinciden'
+                );
+
                 return false;
             }
 
             if (password.length < 6) {
-                e.preventDefault ();
-                alert ('La contraseña debe tener al menos 6 caracteres');
+
+                e.preventDefault();
+
+                alert(
+                    'La contraseña debe tener al menos 6 caracteres'
+                );
+
                 return false;
             }
+
         });
-    </script>
+
+</script>
 </body>
 </html>
