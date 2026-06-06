@@ -6,6 +6,7 @@ import java.util.Map;
 import org.mindrot.jbcrypt.BCrypt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.is1.proyecto.models.Persona;
 import com.is1.proyecto.models.User;
 
 import spark.ModelAndView;
@@ -150,27 +151,35 @@ public class AuthController {
         String username = req.queryParams("name");
         String password = req.queryParams("password");
         String dniStr = req.queryParams("dni");
+        String realName = req.queryParams("realName");
+        String surname = req.queryParams("surname");
+        String correo = req.queryParams("correo");
 
         if (username == null ||
-            password == null ||
-            dniStr == null) {
+                password == null ||
+                dniStr == null) {
 
-            res.redirect(
-                "/user/create?error=Campos obligatorios"
-            );
-
-            return null;
+                res.redirect("/user/create?error=Campos obligatorios");
+                return null;
         }
 
         Integer dni = Integer.valueOf(dniStr);
 
         if (User.findFirst("name = ?", username) != null) {
 
-            res.redirect(
-                "/user/create?error=Usuario existente"
-            );
+                res.redirect("/user/create?error=Usuario existente");
+                return null;
+        }
 
-            return null;
+        if (Persona.findFirst("dni = ?", dni) == null) {
+
+                Persona persona = new Persona();
+                persona.set("dni", dni);
+                persona.set("realName", realName);
+                persona.set("surname", surname);
+                persona.set("telefono", "SIN_TELEFONO");
+                persona.set("correo", correo);
+                persona.saveIt();
         }
 
         String hashed =
@@ -187,7 +196,7 @@ public class AuthController {
 
         res.redirect("/");
         return null;
-    }
+        }
 
     public static Object addUserApi(Request req,
                                     Response res)
