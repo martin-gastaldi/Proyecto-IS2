@@ -6,8 +6,8 @@ import com.is1.proyecto.config.DBConfigSingleton;
 import com.is1.proyecto.controller.AdminController;
 import com.is1.proyecto.controller.AuthController;
 import com.is1.proyecto.controller.DocenteController;
-import com.is1.proyecto.controller.MateriaController;
 import com.is1.proyecto.controller.EstudianteController;
+import com.is1.proyecto.controller.MateriaController;
 
 import static spark.Spark.after;
 import static spark.Spark.before;
@@ -288,6 +288,23 @@ public class App {
         post(
             "/admin/materias/correlativas/delete",
             MateriaController::eliminarCorrelativa
+        );
+
+        get(
+            "/docente/notas",
+            DocenteController::notasView,
+            engine
+        );
+
+        get(
+            "/docente/notas/materia",
+            DocenteController::alumnosMateriaNotas,
+            engine
+        );
+
+        post(
+            "/docente/notas/guardar",
+            DocenteController::guardarNota
         );
     }
 }

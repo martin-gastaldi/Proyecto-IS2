@@ -388,12 +388,34 @@ public class DocenteDao {
                 "notaFinal",
                 c.get("notaFinal")
             );
+            data.put(
+                "dni",
+                dni
+            );
 
             alumnos.add(data);
         }
 
         return alumnos;
     }
+
+        public void actualizarNota(
+                Integer dniEstudiante,
+                Integer idMateria,
+                Double nota,
+                String estado) {
+
+            Base.exec(
+                "UPDATE cursado " +
+                "SET notaFinal = ?, estado = ? " +
+                "WHERE dniEstudiante = ? " +
+                "AND id_materia = ?",
+                nota,
+                estado,
+                dniEstudiante,
+                idMateria
+            );
+        }
 
     public void eliminarDocente(Integer dni) {
 
@@ -412,6 +434,7 @@ public class DocenteDao {
             dni
         );
     }
+
 
     public void editarDocente(Request req) {
 
@@ -571,6 +594,7 @@ public class DocenteDao {
             );
         }
     }
+
 
     public List<Map<String, Object>> obtenerTodasMaterias() {
 
