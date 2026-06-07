@@ -1,5 +1,4 @@
 
- -- Elimina la tabla 'users' si ya existe para asegurar un inicio limpio
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS materia;
 DROP TABLE IF EXISTS docente;

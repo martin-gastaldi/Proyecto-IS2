@@ -151,6 +151,7 @@ public class MateriaDao {
             Integer cargaHoraria,
             Integer idPlan) {
 
+        System.out.println("CREANDO MATERIA");            
         Materia materia = new Materia();
 
         materia.set(

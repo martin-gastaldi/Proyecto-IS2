@@ -1,4 +1,5 @@
 package com.is1.proyecto.controller;
+import com.is1.proyecto.models.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -140,6 +141,240 @@ public class DocenteController {
 
         return null;
     }
+
+    private static Integer obtenerDniDocenteLogueado(Request req) {
+
+        String username =
+                req.session()
+                .attribute(
+                        "currentUserUsername"
+                );
+
+        User user =
+                User.findFirst(
+                    "name = ?",
+                    username
+                );
+
+        if(user == null){
+            return null;
+        }
+
+        return user.getInteger("dni");
+    }
+
+    public static ModelAndView notasView(Request req,Response res){
+
+        Integer dniDocente =
+                obtenerDniDocenteLogueado(req);
+
+        Map<String,Object> model =
+                new HashMap<>();
+
+        Integer idMateriaSeleccionada =
+                null;
+
+        String idMateriaParam =
+                req.queryParams("id_materia");
+
+        List<Map<String,Object>> materias =
+                docenteDao.obtenerMateriasDocente(
+                    dniDocente
+                );
+
+        if(idMateriaParam != null){
+
+            idMateriaSeleccionada =
+                    Integer.valueOf(
+                        idMateriaParam
+                    );
+
+            for(Map<String,Object> materia : materias){
+
+                Integer id =
+                        (Integer) materia.get("id_materia");
+
+                materia.put(
+                    "selected",
+                    id.equals(idMateriaSeleccionada)
+                );
+            }
+
+            List<Map<String,Object>> alumnos =
+                    docenteDao.obtenerAlumnosMateria(
+                        idMateriaSeleccionada
+                    );
+
+            for(Map<String,Object> alumno : alumnos){
+
+                String estado =
+                        (String) alumno.get("estado");
+
+                alumno.put(
+                    "esLibre",
+                    "LIBRE".equals(estado)
+                );
+
+                alumno.put(
+                    "esRegular",
+                    "REGULAR".equals(estado)
+                );
+
+                alumno.put(
+                    "esPromocionada",
+                    "PROMOCIONADA".equals(estado)
+                );
+
+                alumno.put(
+                    "esAprobada",
+                    "APROBADA".equals(estado)
+                );
+            }
+
+            model.put(
+                "alumnos",
+                alumnos
+            );
+        }
+
+        model.put(
+            "materias",
+            materias
+        );
+
+        model.put(
+            "idMateriaSeleccionada",
+            idMateriaSeleccionada
+        );
+
+        return new ModelAndView(
+            model,
+            "docente/notas.mustache"
+        );
+    }
+
+    public static ModelAndView alumnosMateriaNotas(
+            Request req,
+            Response res){
+
+        Integer idMateria =
+                Integer.valueOf(
+                    req.queryParams("id_materia")
+                );
+
+        Integer dniDocente =
+                obtenerDniDocenteLogueado(req);
+
+        Map<String,Object> model =
+                new HashMap<>();
+
+        List<Map<String,Object>> materias =
+                docenteDao.obtenerMateriasDocente(
+                    dniDocente
+                );
+
+        for(Map<String,Object> materia : materias){
+
+            Integer id =
+                    (Integer) materia.get("id_materia");
+
+            materia.put(
+                "selected",
+                id.equals(idMateria)
+            );
+        }
+
+        List<Map<String,Object>> alumnos =
+                docenteDao.obtenerAlumnosMateria(
+                    idMateria
+                );
+
+        for(Map<String,Object> alumno : alumnos){
+
+            String estado =
+                    (String) alumno.get("estado");
+
+            alumno.put(
+                "esLibre",
+                "LIBRE".equals(estado)
+            );
+
+            alumno.put(
+                "esRegular",
+                "REGULAR".equals(estado)
+            );
+
+            alumno.put(
+                "esPromocionada",
+                "PROMOCIONADA".equals(estado)
+            );
+
+            alumno.put(
+                "esAprobada",
+                "APROBADA".equals(estado)
+            );
+        }
+
+        model.put(
+            "materias",
+            materias
+        );
+
+        model.put(
+            "idMateriaSeleccionada",
+            idMateria
+        );
+
+        model.put(
+            "alumnos",
+            alumnos
+        );
+
+        return new ModelAndView(
+            model,
+            "docente/notas.mustache"
+        );
+    }
+
+
+    public static Object guardarNota(
+        Request req,
+        Response res){
+        System.out.println("dniEstudiante=" + req.queryParams("dniEstudiante"));
+        System.out.println("id_materia=" + req.queryParams("id_materia"));
+        System.out.println("notaFinal=" + req.queryParams("notaFinal"));
+        System.out.println("estado=" + req.queryParams("estado"));
+
+    docenteDao.actualizarNota(
+        Integer.valueOf(
+            req.queryParams(
+                "dniEstudiante"
+            )
+        ),
+        Integer.valueOf(
+            req.queryParams(
+                "id_materia"
+            )
+        ),
+        Double.valueOf(
+            req.queryParams(
+                "notaFinal"
+            )
+        ),
+        req.queryParams(
+            "estado"
+        )
+    );
+
+    res.redirect(
+        "/docente/notas?id_materia="
+        + req.queryParams(
+            "id_materia"
+        )
+    );
+
+    return null;
+}
 
     public static ModelAndView desasignarMateria(Request req, Response res) {
 
