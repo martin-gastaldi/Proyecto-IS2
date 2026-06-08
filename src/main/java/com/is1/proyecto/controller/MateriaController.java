@@ -3,6 +3,7 @@ package com.is1.proyecto.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.is1.proyecto.dao.AdminDao;
 import com.is1.proyecto.dao.MateriaDao;
 import com.is1.proyecto.models.Materia;
 
@@ -15,16 +16,45 @@ public class MateriaController {
     private static final MateriaDao materiaDao =
             new MateriaDao();
 
-    public static ModelAndView listar(
+   public static ModelAndView listar(
             Request req,
             Response res) {
 
         Map<String,Object> model =
                 new HashMap<>();
 
+        String carreraParam =
+                req.queryParams("carrera");
+
+        Integer selectedCarrera = null;
+
+        if (carreraParam != null &&
+            !carreraParam.isBlank()) {
+
+            try {
+
+                selectedCarrera =
+                        Integer.valueOf(carreraParam);
+
+            } catch (NumberFormatException e) {
+
+                selectedCarrera = null;
+            }
+        }
+
         model.put(
             "materias",
-            materiaDao.obtenerMaterias()
+            materiaDao.obtenerMaterias(selectedCarrera)
+        );
+
+        model.put(
+            "carreras",
+            adminDao.obtenerCarreras(selectedCarrera)
+        );
+
+        model.put(
+            "selectedCarrera",
+            selectedCarrera
         );
 
         return new ModelAndView(
@@ -32,13 +62,27 @@ public class MateriaController {
             "materias.mustache"
         );
     }
-
+    private static final AdminDao adminDao =
+        new AdminDao();
     public static ModelAndView formNueva(
             Request req,
             Response res) {
 
+        Map<String,Object> model =
+                new HashMap<>();
+
+        model.put(
+            "planes",
+            adminDao.obtenerPlanes(null)
+        );
+
+        model.put(
+            "carreras",
+            adminDao.obtenerCarreras(null)
+        );
+
         return new ModelAndView(
-            new HashMap<>(),
+            model,
             "materia_new.mustache"
         );
     }

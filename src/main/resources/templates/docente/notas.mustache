@@ -134,13 +134,9 @@ tr:hover{
 
     <div class="selector">
 
-        <form
-            action="/docente/notas/materia"
-            method="GET">
+        <form action="/docente/notas/materia" method="GET">
 
-            <label>
-                Materia
-            </label>
+            <label>Materia</label>
 
             <select name="id_materia">
 
@@ -149,7 +145,9 @@ tr:hover{
                 <option
                     value="{{id_materia}}"
                     {{#selected}}selected{{/selected}}>
+
                     {{nombreMateria}}
+
                 </option>
 
                 {{/materias}}
@@ -170,7 +168,6 @@ tr:hover{
 
     </div>
 
-    {{#alumnos}}
 
     <table>
 
@@ -186,100 +183,100 @@ tr:hover{
 
         <tbody>
 
-        {{#alumnos}}
+            {{#alumnos}}
 
-        <tr>
+            <tr>
 
-            <form
-                action="/docente/notas/guardar"
-                method="POST">
+                <form
+                    action="/docente/notas/guardar"
+                    method="POST">
 
-                <td>
+                    <td>
 
-                    {{dni}}
+                        {{dni}}
 
-                    <input
-                        type="hidden"
-                        name="dniEstudiante"
-                        value="{{dni}}">
+                        <input
+                            type="hidden"
+                            name="dniEstudiante"
+                            value="{{dni}}">
 
-                    <input
-                        type="hidden"
-                        name="id_materia"
-                        value="{{idMateriaSeleccionada}}">
+                        <input
+                            type="hidden"
+                            name="id_materia"
+                            value="{{idMateriaSeleccionada}}">
 
-                </td>
+                    </td>
 
-                <td>
-                    {{apellido}}, {{nombre}}
-                </td>
+                    <td>
+                        {{apellido}}, {{nombre}}
+                    </td>
 
-                <td>
+                    <td>
 
-                    <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="10"
-                        name="notaFinal"
-                        value="{{notaFinal}}">
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="10"
+                            name="notaFinal"
+                            value="{{notaFinal}}">
 
-                </td>
+                    </td>
 
-                <td>
+                    <td>
 
-                   <select name="estado">
+                        <select name="estado">
 
-                    <option
-                        value="LIBRE"
-                        {{#esLibre}}selected{{/esLibre}}>
-                        LIBRE
-                    </option>
+                            <option
+                                value="LIBRE"
+                                {{#esLibre}}selected{{/esLibre}}>
+                                LIBRE
+                            </option>
 
-                    <option
-                        value="REGULAR"
-                        {{#esRegular}}selected{{/esRegular}}>
-                        REGULAR
-                    </option>
+                            <option
+                                value="REGULAR"
+                                {{#esRegular}}selected{{/esRegular}}>
+                                REGULAR
+                            </option>
 
-                    <option
-                        value="PROMOCIONADA"
-                        {{#esPromocionada}}selected{{/esPromocionada}}>
-                        PROMOCIONADA
-                    </option>
+                            <option
+                                value="PROMOCIONADA"
+                                {{#esPromocionada}}selected{{/esPromocionada}}>
+                                PROMOCIONADA
+                            </option>
 
-                    <option
-                        value="APROBADA"
-                        {{#esAprobada}}selected{{/esAprobada}}>
-                        APROBADA
-                    </option>
+                            <option
+                                value="APROBADA"
+                                {{#esAprobada}}selected{{/esAprobada}}>
+                                APROBADA
+                            </option>
 
-                </select>
+                        </select>
 
-                </td>
+                    </td>
 
-                <td>
+                    <td>
 
-                    <button
-                        class="btn btn-primary">
+                        <button
+                            type="submit"
+                            class="btn btn-primary">
 
-                        Guardar
+                            Guardar
 
-                    </button>
+                        </button>
 
-                </td>
+                    </td>
 
-            </form>
+                </form>
 
-        </tr>
+            </tr>
 
-        {{/alumnos}}
+            {{/alumnos}}
 
         </tbody>
 
     </table>
 
-    {{/alumnos}}
 
     {{^alumnos}}
 
