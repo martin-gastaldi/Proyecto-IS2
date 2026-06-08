@@ -15,6 +15,7 @@ import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.port;
 import static spark.Spark.post;
+import static spark.Spark.staticFiles;
 import spark.template.mustache.MustacheTemplateEngine;
 
 public class App {
@@ -22,7 +23,7 @@ public class App {
     public static void main(String[] args) {
 
         port(8080);
-
+        staticFiles.location("/public");
         DBConfigSingleton dbConfig = DBConfigSingleton.getInstance();
 
         before((req, res) -> {
