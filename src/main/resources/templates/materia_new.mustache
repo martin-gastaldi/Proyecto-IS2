@@ -154,32 +154,64 @@
         </div>
 
         <div class="form-group">
-            <label for="id_plan">Plan de estudio</label>
-            <select name="id_plan" id="id_plan" required>
-                <option value="" data-id-carrera="">
-                    Seleccione un plan
+            <label for="id_carrera">
+                Carrera
+            </label>
+
+            <select
+                id="id_carrera"
+                required>
+
+                <option value="">
+                    Seleccione una carrera
+                </option>
+
+                {{#carreras}}
+                <option value="{{id_carrera}}">
+                    {{nombreCarrera}}
+                </option>
+                {{/carreras}}
+
+            </select>
+        </div>
+
+        <div class="form-group">
+
+            <label for="id_plan">
+                Plan de estudio
+            </label>
+
+            <select
+                name="id_plan"
+                id="id_plan"
+                required>
+
+                <option value="">
+                    Seleccione primero una carrera
                 </option>
 
                 {{#planes}}
                 <option
                     value="{{id_plan}}"
                     data-id-carrera="{{id_carrera}}">
-                    {{nombreCarrera}} ({{anio}} -
-                    {{#vigenteFlag}}vigente{{/vigenteFlag}}
-                    {{^vigenteFlag}}no vigente{{/vigenteFlag}})
+
+                    Año {{anio}}
+                    -
+                    {{#vigenteFlag}}
+                    Vigente
+                    {{/vigenteFlag}}
+
+                    {{^vigenteFlag}}
+                    No vigente
+                    {{/vigenteFlag}}
+
                 </option>
                 {{/planes}}
+
             </select>
+
         </div>
 
-        <div class="form-group">
-            <label>ID Carrera</label>
-            <input
-                type="number"
-                id="id_carrera"
-                name="id_carrera"
-                readonly>
-        </div>
 
         <div class="form-footer">
             <button type="submit">
@@ -192,21 +224,56 @@
 </div>
 
 <script>
-    const planSelect = document.getElementById('id_plan');
-    const carreraInput = document.getElementById('id_carrera');
 
-    function updateCarreraFromPlan() {
-        const selected =
-            planSelect.options[planSelect.selectedIndex];
+    const carreraSelect =
+        document.getElementById("id_carrera");
 
-        const carreraId =
-            selected.getAttribute('data-id-carrera');
+    const planSelect =
+        document.getElementById("id_plan");
 
-        carreraInput.value = carreraId || '';
+    const todasLasOpciones =
+        Array.from(planSelect.querySelectorAll("option"));
+
+    function filtrarPlanes() {
+
+        const carreraSeleccionada =
+            carreraSelect.value;
+
+        planSelect.innerHTML = "";
+
+        const opcionInicial =
+            document.createElement("option");
+
+        opcionInicial.value = "";
+        opcionInicial.textContent =
+            "Seleccione un plan";
+
+        planSelect.appendChild(
+            opcionInicial
+        );
+
+        todasLasOpciones.forEach(opcion => {
+
+            const carreraPlan =
+                opcion.dataset.idCarrera;
+
+            if (
+                carreraPlan &&
+                carreraPlan === carreraSeleccionada
+            ) {
+
+                planSelect.appendChild(
+                    opcion.cloneNode(true)
+                );
+            }
+        });
     }
 
-    planSelect.addEventListener('change', updateCarreraFromPlan);
-    updateCarreraFromPlan();
+    carreraSelect.addEventListener(
+        "change",
+        filtrarPlanes
+    );
+
 </script>
 
 </body>

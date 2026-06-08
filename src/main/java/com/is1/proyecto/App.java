@@ -156,6 +156,13 @@ public class App {
             EstudianteController::updateProfile,
             engine);
 
+        get("/estudiante/materias",
+            EstudianteController::materias,
+            engine);
+
+        post("/estudiante/materias/inscribir",
+            EstudianteController::inscribirMateria);    
+
         // ADMIN
         get("/admin/panel",
             AdminController::dashboard,

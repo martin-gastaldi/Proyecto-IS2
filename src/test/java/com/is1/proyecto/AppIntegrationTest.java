@@ -23,8 +23,8 @@ import com.is1.proyecto.models.Docente;
 import com.is1.proyecto.models.Estudiante;
 import com.is1.proyecto.models.Inscripcion;
 import com.is1.proyecto.models.Materia;
-import com.is1.proyecto.models.PlanEstudio;
 import com.is1.proyecto.models.Persona;
+import com.is1.proyecto.models.PlanEstudio;
 import com.is1.proyecto.models.User;
 
 /**

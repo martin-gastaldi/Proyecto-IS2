@@ -149,3 +149,24 @@ VALUES (12345678);
 
 INSERT INTO users (name, password, dni) 
 VALUES ('admin', '$2a$10$PqHRcarvc/bJIizSJ9hwHudS1zsjk0bSnIP6bv7GfzyTjxtUyYu.G', 12345678);
+
+INSERT INTO carrera (nombreCarrera, facultad, duracion, titulo)
+VALUES ('Ingenieria en Sistemas de Informacion', 'FCEFyN', 5, 'Ingeniero en Sistemas de Informacion'),
+
+('Ingeniería Civil', 'FCEFyN', 5, 'Ingeniero Civil'),
+
+('Ingeniería Electrónica', 'FCEFyN', 5, 'Ingeniero Electrónico'),
+
+('Ingeniería Mecánica', 'FCEFyN', 5, 'Ingeniero Mecánico'),
+
+('Ingeniería Industrial', 'FCEFyN', 5, 'Ingeniero Industrial'),
+
+('Contador Público', 'Facultad de Ciencias Económicas', 5, 'Contador Público'),
+
+('Licenciatura en Administración', 'Facultad de Ciencias Económicas', 4, 'Licenciado en Administración'),
+
+('Abogacía', 'Facultad de Derecho', 5, 'Abogado'),
+
+('Licenciatura en Psicología', 'Facultad de Psicología', 5, 'Licenciado en Psicología'),
+
+('Medicina', 'Facultad de Ciencias Médicas', 6, 'Médico');

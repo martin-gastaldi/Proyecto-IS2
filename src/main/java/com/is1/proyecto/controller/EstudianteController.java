@@ -79,4 +79,71 @@ public class EstudianteController {
 
         return null;
     }
+
+    public static ModelAndView materias(
+            Request req,
+            Response res) {
+
+        Boolean loggedIn =
+                req.session().attribute("loggedIn");
+
+        Boolean isDocente =
+                req.session().attribute("isDocente");
+
+        Boolean isAdmin =
+                req.session().attribute("isAdmin");
+
+        if (
+            loggedIn == null ||
+            !loggedIn ||
+            Boolean.TRUE.equals(isDocente) ||
+            Boolean.TRUE.equals(isAdmin)
+        ) {
+            res.redirect("/?error=Acceso no autorizado");
+            return null;
+        }
+
+        Integer dni =
+                req.session().attribute("dni");
+
+        Map<String,Object> model =
+                new HashMap<>();
+
+        model.put(
+            "materiasCursadas",
+            estudianteDao.obtenerMateriasCursadas(dni)
+        );
+
+        model.put(
+            "materiasDisponibles",
+            estudianteDao.obtenerMateriasDisponibles(dni)
+        );
+
+        return new ModelAndView(
+            model,
+            "estudiante/materias.mustache"
+        );
+    }
+
+    public static Object inscribirMateria(
+            Request req,
+            Response res) {
+
+        Integer dni =
+                req.session().attribute("dni");
+
+        Integer idMateria =
+                Integer.valueOf(
+                    req.queryParams("id_materia")
+                );
+
+        estudianteDao.inscribirMateria(
+            dni,
+            idMateria
+        );
+
+        res.redirect("/estudiante/materias");
+
+        return null;
+    }
 }
