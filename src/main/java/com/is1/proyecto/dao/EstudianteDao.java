@@ -169,100 +169,146 @@ public class EstudianteDao {
         return materias;
     }
 
-    public List<Map<String,Object>>
+public List<Map<String,Object>>
     obtenerMateriasDisponibles(Integer dni) {
 
-        List<Map<String,Object>> materias =
-                new ArrayList<>();
+    List<Map<String,Object>> materias =
+            new ArrayList<>();
 
-        Inscripcion inscripcion =
-                Inscripcion.findFirst(
-                    "dniEstudiante = ?",
-                    dni
+    Inscripcion inscripcion =
+            Inscripcion.findFirst(
+                "dniEstudiante = ?",
+                dni
+            );
+
+    if (inscripcion == null) {
+        return materias;
+    }
+
+    Integer idPlan =
+            inscripcion.getIdPlan();
+
+    List<PlanMateria> planMaterias =
+            PlanMateria.where(
+                "id_plan = ?",
+                idPlan
+            );
+
+    for (PlanMateria pm : planMaterias) {
+
+        Integer idMateria =
+                pm.getIdMateria();
+
+        /*
+         * Ya cursada
+         */
+        Cursado cursado =
+                Cursado.findFirst(
+                    "dniEstudiante = ? AND id_materia = ?",
+                    dni,
+                    idMateria
                 );
 
-        if (inscripcion == null) {
-            return materias;
+        if (cursado != null) {
+            continue;
         }
 
-        Integer idPlan =
-                inscripcion.getIdPlan();
-
-        List<PlanMateria> planMaterias =
-                PlanMateria.where(
-                    "id_plan = ?",
-                    idPlan
+        /*
+         * Verificar correlatividades
+         */
+        List<Correlatividad> correlativas =
+                Correlatividad.where(
+                    "id_materia = ?",
+                    idMateria
                 );
 
-        for (PlanMateria pm : planMaterias) {
+        boolean cumpleCorrelativas = true;
 
-            Integer idMateria =
-                    pm.getIdMateria();
+        for (Correlatividad corr : correlativas) {
 
-            /*
-            * Ya cursada
-            */
-            Cursado cursado =
+            Cursado cursadoCorrelativa =
                     Cursado.findFirst(
                         "dniEstudiante = ? AND id_materia = ?",
                         dni,
-                        idMateria
+                        corr.getIdCorrelativa()
                     );
 
-            if (cursado != null) {
-                continue;
+            if (cursadoCorrelativa == null) {
+
+                cumpleCorrelativas = false;
+                break;
             }
 
-            /*
-            * Tiene correlativas?
-            */
-            Correlatividad correlativa =
-                    Correlatividad.findFirst(
-                        "id_materia = ?",
-                        idMateria
-                    );
+            String condicion =
+                    corr.getCondicion();
 
-            if (correlativa != null) {
-                continue;
+            String estado =
+                    cursadoCorrelativa.getEstado();
+
+            if ("REGULAR".equals(condicion)) {
+
+                if (
+                    !"REGULAR".equals(estado) &&
+                    !"PROMOCIONADA".equals(estado) &&
+                    !"APROBADA".equals(estado)
+                ) {
+                    cumpleCorrelativas = false;
+                    break;
+                }
+
+            } else if ("APROBADA".equals(condicion)) {
+
+                if (
+                    !"PROMOCIONADA".equals(estado) &&
+                    !"APROBADA".equals(estado)
+                ) {
+                    cumpleCorrelativas = false;
+                    break;
+                }
             }
-
-            Materia materia =
-                    Materia.findById(
-                        idMateria
-                    );
-
-            if (materia == null) {
-                continue;
-            }
-
-            Map<String,Object> data =
-                    new HashMap<>();
-
-            data.put(
-                "id_materia",
-                materia.getIdMateria()
-            );
-
-            data.put(
-                "nombreMateria",
-                materia.getNombreMateria()
-            );
-
-            data.put(
-                "anio",
-                materia.getAnio()
-            );
-
-            data.put(
-                "cuatrimestre",
-                materia.getCuatrimestre()
-            );
-
-            materias.add(data);
         }
 
-        return materias;
+        if (!cumpleCorrelativas) {
+            continue;
+        }
+
+        Materia materia =
+                Materia.findById(
+                    idMateria
+                );
+
+        if (materia == null) {
+            continue;
+        }
+
+        Map<String,Object> data =
+                new HashMap<>();
+
+        data.put(
+            "id_materia",
+            materia.getIdMateria()
+        );
+
+        data.put(
+            "nombreMateria",
+            materia.getNombreMateria()
+        );
+
+        data.put(
+            "anio",
+            materia.getAnio()
+        );
+
+        data.put(
+            "cuatrimestre",
+            materia.getCuatrimestre()
+        );
+
+        materias.add(data);
     }
+
+    return materias;
+}
 
         private boolean cumpleCorrelativas(
             Integer dni,
